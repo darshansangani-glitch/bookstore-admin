@@ -1,0 +1,329 @@
+@import "tailwindcss";
+
+/* @theme {
+      --font-display: "Satoshi", "sans-serif";
+      --breakpoint-3xl: 1920px;
+      --color-avocado-100: oklch(0.99 0 0);
+      --color-avocado-200: oklch(0.98 0.04 113.22);
+      --color-avocado-300: oklch(0.94 0.11 115.03);
+      --color-avocado-400: oklch(0.92 0.19 114.08);
+      --color-avocado-500: oklch(0.84 0.18 117.33);
+      --color-avocado-600: oklch(0.53 0.12 118.34);
+      --ease-fluid: cubic-bezier(0.3, 0, 0, 1);
+      --ease-snappy: cubic-bezier(0.2, 0, 0, 1); */
+
+@layer components {
+  .card {
+    @apply 
+    relative
+    flex
+    flex-col
+    border-0
+    rounded-xl!
+  }
+}
+
+/* @layer components{
+  .font-family{
+    font-["Poppins", sans-serif]
+  }
+} */
+
+.counter {
+  font-size: 16px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  color: var(--accent);
+  background: var(--accent-bg);
+  border: 2px solid transparent;
+  transition: border-color 0.3s;
+  margin-bottom: 24px;
+
+  &:hover {
+    border-color: var(--accent-border);
+  }
+  &:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+}
+
+header {
+  display: flex;
+  background-color: #000000;
+  color: white;
+  height: 70px;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.home-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 20px;
+  font-weight: 500;
+  margin-left: 20px;
+}
+
+.home-logo > img {
+  width: 60px;
+}
+
+.home-right {
+  display: flex;
+  align-items: center;
+  gap: 17px;
+  margin-right: 20px;
+}
+
+.home-right > .home-log {
+  width: 80px;
+  height: 40px;
+  background-color: #000000;
+  color: white;
+  border-radius: 12px;
+  border: 1px solid white;
+  margin: 12px auto;
+  font-size: 15px;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.home-log:hover {
+  background-color: white;
+  color: #000000;
+  font-size: 15px;
+}
+
+.home-right > img {
+  width: 40px;
+  border-radius: 20px;
+  height: 40px;
+}
+
+.nav-bar {
+  display: flex;
+  gap: 20px;
+}
+
+.nav-bar > a {
+  text-decoration: none;
+  color: white;
+  border-bottom: 1px solid white;
+  font-size: 20px;
+  font-family: "Montserrat";
+  font-weight: 500;
+}
+
+.nav-bar > a:hover {
+  color: #505050;
+  border-bottom: 1px solid #505050;
+}
+
+.book-add-container {
+  width: 1324px;
+  margin: 10px auto;
+  position: relative;
+}
+
+.book-add-btn {
+  width: 150px;
+  height: 45px;
+  border-radius: 7px;
+  border: 2px solid black;
+  background-color: transparent;
+  color: black;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.book-add-btn:hover {
+  background-color: #817d7d;
+  color: white;
+  border-color: white;
+  font-size: 18px;
+}
+
+.form-add-container {
+  width: 100%;
+  margin: 0 auto;
+}
+
+.book-add-form {
+  width: 650px;
+  height: 625px;
+  bottom: -600px;
+  left: 325px;
+  position: absolute;
+  background-color: aquamarine;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  border-radius: 20px;
+  align-items: center;
+}
+
+.book-add-form > label {
+  font-size: 20px;
+  font-weight: 500;
+  display: flex;
+  flex-direction: column;
+  line-height: 30px;
+  margin-bottom: 10px;
+}
+
+.book-add-form > label > input {
+  width: 600px;
+  height: 35px;
+  padding: 5px;
+  padding-left: 20px;
+  border-radius: 7px;
+  color: black;
+  border: 1px solid #505050;
+  background-color: transparent;
+  margin-top: 5px;
+}
+
+.book-add-form > label > textarea {
+  width: 600px;
+  height: 35px;
+  padding: 5px;
+  padding-left: 20px;
+  border-radius: 7px;
+  color: black;
+  border: 1px solid #505050;
+  background-color: transparent;
+  margin-top: 5px;
+}
+
+.book-add-form > label > select {
+  width: 625px;
+  height: 45px;
+  padding: 5px;
+  color: black;
+  padding-left: 20px;
+  border-radius: 7px;
+  border: 1px solid #505050;
+  background-color: transparent;
+  margin-top: 5px;
+}
+
+.form-add-btn {
+  width: 630px;
+  display: flex;
+  justify-content: space-between;
+  margin: 21px 10px;
+}
+.form-add-btn > button {
+  width: 100px;
+  height: 40px;
+  border-radius: 7px;
+  border: 0px;
+}
+
+.book-table {
+  width: 1324px;
+  height: 100%;
+  margin: 40px auto;
+  display: grid;
+}
+
+.statistics-container {
+  width: 1324px;
+  height: auto;
+}
+
+.book-total {
+  width: 180px;
+  height: 100px;
+  border: 2px solid #000000;
+  display: grid;
+  justify-content: center;
+  font-size: 60px;
+  justify-items: center;
+  border-radius: 20px;
+  padding: 20px;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+.book-total > span {
+  font-size: 30px;
+  font-weight: 600;
+  color: #505050;
+}
+
+table {
+  border: 1px solid #505050;
+  border-radius: 5px;
+}
+
+.book-table > table > thead > tr {
+  gap: 20px;
+}
+
+.book-table > table > thead > tr > th {
+  width: 175px;
+  font-size: 20px;
+  padding: 10px;
+  color: white;
+  background-color: #817d7d;
+}
+
+.book-table > table > tbody > tr > td {
+  max-width: 175px;
+  font-size: 20px;
+  padding: 10px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.book-data-btn {
+  display: flex;
+  justify-content: space-around;
+}
+
+.book-data-btn > button {
+  width: 40px;
+  height: 40px;
+  border-radius: 5px;
+  border: 0px;
+}
+
+.purchase-table {
+  width: 1324px;
+  height: 100%;
+  margin: 40px auto;
+  display: flex;
+}
+
+.purchase-table > table > thead > tr {
+  gap: 20px;
+}
+
+.purchase-table > table > thead > tr > th {
+  width: 180px;
+  font-size: 20px;
+  padding: 10px;
+  color: white;
+  background-color: #817d7d;
+}
+
+.purchase-table > table > tbody > tr > td {
+  max-width: 180px;
+  font-size: 18px;
+  padding: 10px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.purchase-btn {
+  border-radius: 7px;
+  width: 177px;
+  height: 40px;
+  border: 0px;
+}
