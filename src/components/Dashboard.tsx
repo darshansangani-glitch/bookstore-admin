@@ -1,4 +1,4 @@
-import { dashbardItems } from "../data/CardData.js";
+import { dashboardItems } from "../data/CardData.js";
 import { Card } from "./Card.js";
 import { useEffect, useState } from "react";
 
@@ -34,7 +34,7 @@ export function Cards() {
 
   return (
     <div className="flex flex-wrap font-[Poppins]! gap-6 mt-4">
-      {dashbardItems.map((item, i) => (
+      {dashboardItems.map((item, i) => (
         <Card
           key={item.name}
           item={{ ...item, number: statValues[i] ?? item.number }}
@@ -53,7 +53,7 @@ export default function Dashboard() {
           <span className="text-red-500">Book</span>Worm DashBoard
         </h1>
         <p className="text-[15px]">
-          Library Books Statistic Visulizations Given Below....
+          Library Books Statistic Visualizations Given Below....
         </p>
       </div>
       <Cards />

@@ -1,6 +1,6 @@
-import { Outlet } from "react-router-dom";
 import Header from "../components/Header.js";
 import SideBar from "../components/Sidebar.js";
+import Protected from "../components/Protcted.js";
 
 export default function AppLayout() {
   return (
@@ -9,7 +9,7 @@ export default function AppLayout() {
         <SideBar />
         <div className="flex flex-1 flex-col">
           <Header />
-          <Outlet />
+          <Protected />
         </div>
       </div>
     </>

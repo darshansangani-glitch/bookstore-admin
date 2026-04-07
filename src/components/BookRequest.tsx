@@ -2,11 +2,12 @@ import { useEffect, useState } from "react";
 import ReusableTable, { Column } from "./Table.js";
 import { BookRequestedItems } from "../data/CardData.js";
 import { Card } from "./Card.js";
+import { useAppSelector } from "../redux/hooks/hooks.js";
 
 interface bookRequest {
   _id: string;
   user_id: string;
-  book_id:string,
+  book_id: string,
   book_name: string;
   timestamp: string;
   req_status: string;
@@ -35,7 +36,7 @@ export function BookRequest() {
     setAddBookIssue((prev) => !prev);
   };
 
-  const token = localStorage.getItem("token-info");
+  const token = useAppSelector(s => s.auth.token)
 
   const addIssueData = async () => {
     try {
@@ -93,13 +94,13 @@ export function BookRequest() {
 }
 
 export default function BookRequestShow() {
-  const token = localStorage.getItem("token-info");
+  const token = useAppSelector(s => s.auth.token)
 
   const [request, setRequests] = useState([
     {
       _id: "",
       user_id: "",
-      book_id:"",
+      book_id: "",
       book_name: "",
       timestamp: "",
       req_status: "",
@@ -198,7 +199,6 @@ export default function BookRequestShow() {
 
   useEffect(() => {
     LoadRequests();
-    console.log("ssdnfbsnfbs");
   }, []);
 
   return (

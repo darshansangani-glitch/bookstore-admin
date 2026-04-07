@@ -9,6 +9,7 @@ import { Card } from "./Card.js";
 import { jwtDecode } from "jwt-decode";
 import { JwtPayload } from "jsonwebtoken";
 import PurchaseEditForm from "./PurchaseEditForm.js";
+import { useAppSelector } from "../redux/hooks/hooks.js";
 
 interface CustomJwtPayload extends JwtPayload {
   id: string;
@@ -54,13 +55,13 @@ export function PurchaseInsertion() {
     purchase_quantity: "",
   });
 
-  // const token = localStorage.getItem("token-info");
-  const token = localStorage.getItem("token-info");
+  // const token = useAppSelector(s=>s.auth.token)
+  const token = useAppSelector((state) => state.auth.token)
 
-  const decodedPayload = jwtDecode(token ?? "") as CustomJwtPayload;
+ 
+ const decodedPayload = jwtDecode(token ?? "") as CustomJwtPayload;
 
   const userRole = decodedPayload.role;
-
   const handleForm = async () => {
     setAddPurchase((prev) => !prev);
   };
@@ -187,7 +188,7 @@ export default function PurchaseDataShow() {
     setEditPurchaseData(purchase);
   };
 
-  const token = localStorage.getItem("token-info");
+  const token = useAppSelector(s => s.auth.token)
 
   const LoadPurchases = async () => {
     try {
@@ -278,7 +279,6 @@ export default function PurchaseDataShow() {
 
   useEffect(() => {
     LoadPurchases();
-    console.log("bashchj");
   }, []);
 
   return (

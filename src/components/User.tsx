@@ -5,6 +5,7 @@ import Typography from "@mui/material/Typography";
 import ReusableTable, { Column } from "./Table";
 import { UsersItems } from "../data/CardData";
 import { Card } from "./Card";
+import { useAppSelector } from "../redux/hooks/hooks";
 
 interface user {
   _id: string;
@@ -29,7 +30,7 @@ const columns: readonly Column<user>[] = [
   { id: "actions", label: "Activities", minWidth: 150, align: "left" },
 ];
 
-export default function Userform() {
+export default function UserForm() {
   const [addUser, setAddUser] = React.useState(false);
   const [userData, setUserData] = React.useState({
     name: "",
@@ -43,7 +44,7 @@ export default function Userform() {
     setAddUser((prev) => !prev);
   };
 
-  const token = localStorage.getItem("token-info");
+  const token = useAppSelector((state)=>state.auth.token)
 
   const addUserData = async () => {
     try {
@@ -199,7 +200,7 @@ export function UserTable() {
     },
   ]);
 
-  const token = localStorage.getItem("token-info");
+  const token = useAppSelector(s=>s.auth.token)
 
   const LoadUsers = async () => {
     try {
