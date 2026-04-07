@@ -6,6 +6,7 @@ import ReusableTable, { Column } from "./Table.js";
 import { Card } from "./Card.js";
 import { BookItems } from "../data/CardData.js";
 import BookEditForm from "./BookEditForm.js";
+import { useAppSelector } from "../redux/hooks/hooks.js";
 
 interface book {
   _id: string;
@@ -50,7 +51,7 @@ export function BookAdd() {
     setAddBook((prev) => !prev);
   };
 
-  const token = localStorage.getItem("token-info");
+  const token = useAppSelector((state) => state.auth.token)
 
   // const toBase64 = uInt8Array => btoa(String.fromCharCode(...uInt8Array));
 
@@ -79,7 +80,9 @@ export function BookAdd() {
         console.log(response);
 
         const result = (await response).json();
-        setBookData(result);
+        if(result){
+          setBookData(result);
+        }
       }
     } catch (error) {
       console.log(error);
@@ -206,7 +209,7 @@ export function BookAdd() {
                     if (target && target.files && target.files.length > 0) {
                       setBookData((prev) => ({
                         ...prev,
-                        book_image: target.files[0],
+                        book_image: target?.files[0],
                       }));
                     }
                   }}
@@ -258,7 +261,7 @@ export default function BooksTable() {
     },
   ]);
 
-  const token = localStorage.getItem("token-info");
+  const token = useAppSelector(s => s.auth.token)
 
   const LoadBooks = async () => {
     try {

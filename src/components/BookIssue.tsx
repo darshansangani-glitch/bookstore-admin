@@ -5,6 +5,7 @@ import React, { useEffect, useState } from "react";
 import ReusableTable, { Column } from "./Table.js";
 import { BookIssuedItems } from "../data/CardData.js";
 import { Card } from "./Card.js";
+import { useAppSelector } from "../redux/hooks/hooks.js";
 
 interface issue {
   _id: string;
@@ -39,7 +40,7 @@ export function BookIssueAdd() {
     setAddIssue((prev) => !prev);
   };
 
-  const token = localStorage.getItem("token-info");
+  const token = useAppSelector(s => s.auth.token)
 
   const addBookData = async () => {
     try {
@@ -136,7 +137,7 @@ export default function IssueBooksTable() {
 
   const [stats, setStats] = useState<Stats | null>(null);
 
-   useEffect(() => {
+  useEffect(() => {
     fetch("http://localhost:5001/api/stats", { credentials: "include" })
       .then((res) => res.json())
       .then((data: Stats) => setStats(data))
@@ -147,7 +148,7 @@ export default function IssueBooksTable() {
     ? [stats.booksIssued, stats.booksRequested]
     : [null, null, null, null, null];
 
-  const token = localStorage.getItem("token-info");
+  const token = useAppSelector(s => s.auth.token)
 
   const LoadIssues = async () => {
     try {
@@ -194,7 +195,7 @@ export default function IssueBooksTable() {
 
       LoadIssues();
       setIssues((prev) => prev.filter((record) => record._id !== row._id));
-      
+
       return { success: true };
     } catch (error) {
       console.error("Error deleting record:", error);

@@ -1,8 +1,3 @@
-// import { useEffect, useState } from "react";
-// import darkLogo from "../assets/darkLogo.png";
-// import { MdOutlineMailOutline } from "react-icons/md";
-// import { RiLockPasswordLine } from "react-icons/ri";
-// import { useNavigate } from "react-router-dom";
 import React, { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -17,6 +12,8 @@ import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import Input from "@mui/material/Input";
 import { useNavigate } from "react-router-dom";
 import LightLogo from "../assets/lightLogo.png";
+import { login } from "../redux/features/slice/authSlice";
+import { useAppSelector, useAppDispatch } from "../redux/hooks/hooks";
 
 export default function Login() {
   const [showPassword, setShowPassword] = React.useState(false);
@@ -24,15 +21,10 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const [memoryToken, setMemoryToken] = useState("");
-
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const userToken = useAppSelector((state) => state.auth.token)
 
-  useEffect(() => {
-    if (memoryToken) {
-      navigate("/admin-home");
-    }
-  }, [memoryToken]);
 
   const handleLogin = async () => {
     const url = `${import.meta.env.VITE_API_URL}/login`;
@@ -47,9 +39,10 @@ export default function Login() {
         body: JSON.stringify({ email, password }),
       });
       const result = await response.json();
-      localStorage.setItem("token-info", result.token);
-      setMemoryToken(result.token)
-      return memoryToken;
+      // localStorage.setItem("token-info", result.token);
+      dispatch(login(result.token))
+      navigate('/admin-home')
+      return userToken;
     } catch (error) {
       console.error("Login error:", error);
       throw error;
@@ -122,7 +115,7 @@ export default function Login() {
           className="mt-7! w-90"
           variant="contained"
           type="button"
-          onClick={handleLogin}
+          onClick={() => handleLogin()}
         >
           Log In
         </Button>

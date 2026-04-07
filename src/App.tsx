@@ -8,11 +8,12 @@ import AdminPurchasePage from "./pages/purchase.js";
 import AdminBookRequestPage from "./pages/BookRequestPage.js";
 import BookIssuedPage from "./pages/BookIssuedPage.js";
 import { UserPage } from "./pages/User.js";
+import Protected from "./components/Protcted.js";
 
 function App() {
   const router = createBrowserRouter([
     {
-      path: "/",
+      path: "/login",
       element: <Login />,
     },
     {
@@ -20,32 +21,37 @@ function App() {
       element: <AppLayout />,
       children: [
         {
-          path: "/books",
-          element: <AdminBooksPage />,
-        },
-        {
-          path: "/admin-home",
-          element: <AdminHomePage />,
-        },
-        {
-          path: "/purchase",
-          element: <AdminPurchasePage />,
-        },
-        {
-          path: "/book-requests",
-          element: <AdminBookRequestPage />,
-        },
-        {
-          path: "/book-issue",
-          element: <BookIssuedPage />,
-        },
-        {
-          path:'/user',
-          element:<UserPage />
-        }
-      ],
-    },
-    
+          path: '/',
+          element: <Protected />,
+          children: [
+            {
+              path: "/books",
+              element: <AdminBooksPage />,
+            },
+            {
+              path: "/admin-home",
+              element: <AdminHomePage />,
+            },
+            {
+              path: "/purchase",
+              element: <AdminPurchasePage />,
+            },
+            {
+              path: "/book-requests",
+              element: <AdminBookRequestPage />,
+            },
+            {
+              path: "/book-issue",
+              element: <BookIssuedPage />,
+            },
+            {
+              path: '/user',
+              element: <UserPage />
+            }
+          ]
+        }]
+
+    }
   ]);
   // <Router>
   //   <Routes>

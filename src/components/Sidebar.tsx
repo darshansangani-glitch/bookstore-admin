@@ -13,16 +13,19 @@ import darkLogo from "../assets/darkLogo.png";
 import { useNavigate } from "react-router-dom";
 import { MdLogout } from "react-icons/md";
 import { useState } from "react";
+import { useAppDispatch } from "../redux/hooks/hooks.js";
+import { logout } from "../redux/features/slice/authSlice.js";
 
 const drawerWidth = 240;
 
 export default function SideBar() {
   const [location, setLocation] = useState(0);
   const navigate = useNavigate();
+  const dispatch = useAppDispatch()
 
   const handleLogOut = async (e: any) => {
     e.preventDefault();
-    localStorage.removeItem("token-info");
+    dispatch(logout())
     navigate("/");
   };
 
