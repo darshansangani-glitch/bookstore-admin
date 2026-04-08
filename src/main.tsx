@@ -5,6 +5,10 @@ import App from './App.js'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <App />
+    <Provider store={store}>
+      <PersistGate persistor={persistor}>
+        <App />
+      </PersistGate>
+    </Provider>
   </StrictMode>,
 )

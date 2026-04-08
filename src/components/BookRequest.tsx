@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import ReusableTable, { Column } from "./Table.js";
 import { BookRequestedItems } from "../data/CardData.js";
 import { Card } from "./Card.js";
+import { useAppSelector } from "../redux/hooks/hooks.js";
+import { api } from "../utils/api.js";
 
 interface bookRequest {
   _id: string;
@@ -35,23 +37,12 @@ export function BookRequest() {
     setAddBookIssue((prev) => !prev);
   };
 
-  const token = localStorage.getItem("token-info");
+  const token = useAppSelector(s=>s.auth.token)
 
   const addIssueData = async () => {
     try {
-      const url = `${import.meta.env.VITE_API_URL}/book-issued/add`;
-      const response = fetch(url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: token ? ` ${token}` : "",
-        },
-        body: JSON.stringify(issueData),
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          setIssueData(data);
-        });
+      const result = await api.post('/book-issued/add', issueData, token ? token : '')
+      setIssueData(result)
     } catch (error) {
       console.log(error);
     }
@@ -108,21 +99,7 @@ export default function BookRequestShow() {
 
   const LoadRequests = async () => {
     try {
-      const url = `${import.meta.env.VITE_API_URL}/request`;
-
-      const response = await fetch(url, {
-        method: "GET",
-        headers: {
-          Authorization: token ? ` ${token}` : "",
-        },
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error("Server error response:", errorText);
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const data = await response.json();
+      const data = await api.get('/request', token ? token : '');
       const withIds = await data.Requests.map((item: bookRequest) =>
         item._id ? item : { ...item, _id: item._id },
       );
@@ -164,17 +141,7 @@ export default function BookRequestShow() {
 
   const deleteRecord = async (row: bookRequest) => {
     try {
-      const url = `${import.meta.env.VITE_API_URL}/request/delete/${row._id}`;
-      const response = await fetch(url, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: token ? ` ${token}` : "",
-        },
-      });
-      if (!response.ok) {
-        throw new Error("Failed to delete the record");
-      }
+      const result = await api.delete(`/request/delete/${row._id}`, token ? token : '')
       console.log("deleted record");
       setRequests((prev) => prev.filter((record) => record._id !== row._id));
       return { success: true };

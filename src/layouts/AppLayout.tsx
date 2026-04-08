@@ -1,6 +1,10 @@
 import { Outlet } from "react-router-dom";
 import Header from "../components/Header.js";
 import SideBar from "../components/Sidebar.js";
+<<<<<<< Updated upstream
+=======
+import Protected from "../components/Protected.js";
+>>>>>>> Stashed changes
 
 export default function AppLayout() {
   return (
