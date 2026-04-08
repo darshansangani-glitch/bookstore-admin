@@ -6,6 +6,8 @@ import ReusableTable, { Column } from "./Table.js";
 import { Card } from "./Card.js";
 import { BookItems } from "../data/CardData.js";
 import BookEditForm from "./BookEditForm.js";
+import { useAppSelector } from "../redux/hooks.js";
+import { api } from "../utils/api.js";
 
 interface book {
   _id: string;
@@ -50,7 +52,7 @@ export function BookAdd() {
     setAddBook((prev) => !prev);
   };
 
-  const token = localStorage.getItem("token-info");
+  const token = useAppSelector(s=>s.auth.token)
 
   // const toBase64 = uInt8Array => btoa(String.fromCharCode(...uInt8Array));
 
@@ -59,27 +61,10 @@ export function BookAdd() {
       const data = document.getElementById("Book_add_form") as HTMLFormElement;
       if (data) {
         const formData = new FormData(data);
-        // formData.append("book_name", this.book_name);
-        // formData.append("description", this.description);
-        // formData.append("author", this.author);
-        // formData.append("category", this.category);
-        // formData.append("shelf_name", this.shelf_name);
-        // formData.append("quantity", this.quantity);
-        // formData.append("book_image", this.book_image);
-        console.log(formData);
-        const url = `${import.meta.env.VITE_API_URL}/book/add`;
-        console.log(url);
-        const response = fetch(url, {
-          method: "POST",
-          headers: {
-            Authorization: token ? ` ${token}` : "",
-          },
-          body: formData,
-        });
-        console.log(response);
-
-        const result = (await response).json();
-        setBookData(result);
+        const result = await api.post('/book/add', formData, token ? token : '');
+        if (result) {
+          setBookData(result);
+        }
       }
     } catch (error) {
       console.log(error);
@@ -203,10 +188,10 @@ export function BookAdd() {
                   onChange={(e) => {
                     const target = e.target;
 
-                    if (target && target.files && target.files.length > 0) {
+                    if (target) {
                       setBookData((prev) => ({
                         ...prev,
-                        book_image: target.files[0],
+                        book_image: target.files ? target.files[0] : null,
                       }));
                     }
                   }}
@@ -262,21 +247,8 @@ export default function BooksTable() {
 
   const LoadBooks = async () => {
     try {
-      const url = `${import.meta.env.VITE_API_URL}/book`;
-
-      const response = await fetch(url, {
-        method: "GET",
-        headers: {
-          Authorization: token ? ` ${token}` : "",
-        },
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error("Server error response:", errorText);
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const data = await response.json();
+      const data = await api.get('/book', token ? token : '')
+      console.log(data)
       const withIds = data.Books.map((item: book) =>
         item._id ? item : { ...item, _id: item._id },
       );
@@ -290,19 +262,7 @@ export default function BooksTable() {
 
   const updateRecord = async () => {
     try {
-      const url = `${import.meta.env.VITE_API_URL}/book/update/${editBookId}`;
-      const response = await fetch(url, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: token ? ` ${token}` : "",
-        },
-        body: JSON.stringify(editBookData),
-      });
-      if (!response.ok) {
-        throw new Error("Failed to update the record");
-      }
-
+      await api.put(`/book/update/${editBookId}`, editBookData, token ? token : '')
       setEditBookId(null);
       setEditBookData(null);
       LoadBooks();
@@ -325,18 +285,8 @@ export default function BooksTable() {
 
   const deleteRecord = async (row: book) => {
     try {
-      const url = `${import.meta.env.VITE_API_URL}/book/delete/${row._id}`;
-      const response = await fetch(url, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: token ? ` ${token}` : "",
-        },
-      });
-      if (!response.ok) {
-        throw new Error("Failed to delete the record");
-      }
 
+      const result = await api.delete(`/book/delete/${row._id}`, token ? token : '')
       LoadBooks();
       return { success: true };
     } catch (error) {

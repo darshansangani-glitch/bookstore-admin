@@ -8,6 +8,7 @@ import AdminPurchasePage from "./pages/purchase.js";
 import AdminBookRequestPage from "./pages/BookRequestPage.js";
 import BookIssuedPage from "./pages/BookIssuedPage.js";
 import { UserPage } from "./pages/User.js";
+import Protected from "./components/Protcted.js";
 
 function App() {
   const router = createBrowserRouter([

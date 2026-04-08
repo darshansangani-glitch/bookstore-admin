@@ -23,13 +23,13 @@ export function Cards() {
 
   const statValues = stats
     ? [
-        stats.totalBooks,
-        stats.totalQuantity,
-        stats.booksIssued,
-        stats.booksRequested,
-        stats.booksPurchased,
-        stats.totalUsers,
-      ]
+      stats.totalBooks,
+      stats.totalQuantity,
+      stats.booksIssued,
+      stats.booksRequested,
+      stats.booksPurchased,
+      stats.totalUsers,
+    ]
     : [null, null, null, null, null, null];
 
   return (

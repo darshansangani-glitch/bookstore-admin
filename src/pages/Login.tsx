@@ -35,7 +35,7 @@ export default function Login() {
   }, [memoryToken]);
 
   const handleLogin = async () => {
-    const url = `${import.meta.env.VITE_API_URL}/login`;
+    const url = `${import.meta.env.VITE_API_URL}/user/login`;
 
     try {
       const response = await fetch(url, {
@@ -47,9 +47,9 @@ export default function Login() {
         body: JSON.stringify({ email, password }),
       });
       const result = await response.json();
-      localStorage.setItem("token-info", result.token);
-      setMemoryToken(result.token)
-      return memoryToken;
+      dispatch(login(result.token))
+      navigate('/admin-home')
+      return userToken;
     } catch (error) {
       console.error("Login error:", error);
       throw error;

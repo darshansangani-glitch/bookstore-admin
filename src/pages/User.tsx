@@ -7,7 +7,11 @@ interface CustomJwtPayload extends JwtPayload {
   role: string;
 }
 export function UserPage() {
+<<<<<<< Updated upstream
   const token = localStorage.getItem("token-info");
+=======
+  const token = useAppSelector(state => state.auth.token)
+>>>>>>> Stashed changes
 
   const decodedPayload = jwtDecode(token ?? "") as CustomJwtPayload;
 
