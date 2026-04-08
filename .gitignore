@@ -22,4 +22,5 @@ public
 *.njsproj
 *.sln
 *.sw?
+.env
 package-lock.json
