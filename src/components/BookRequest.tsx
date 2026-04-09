@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import ReusableTable, { Column } from "./Table.js";
 import { BookRequestedItems } from "../data/CardData.js";
 import { Card } from "./Card.js";
-import { useAppSelector } from "../redux/hooks/hooks.js";
+import { useAppSelector } from "../redux/hooks.js";
 import { api } from "../utils/api.js";
 
 interface bookRequest {
@@ -27,64 +27,64 @@ const columns: readonly Column<bookRequest>[] = [
   { id: "actions", label: "Activity", minWidth: 150, align: "left" },
 ];
 
-export function BookRequest() {
-  const [addBookIssue, setAddBookIssue] = useState(false);
-  const [issueData, setIssueData] = useState({
-    request_id: "",
-  });
+// export function BookRequest() {
+//   const [addBookIssue, setAddBookIssue] = useState(false);
+//   const [issueData, setIssueData] = useState({
+//     request_id: "",
+//   });
 
-  const handleForm = async () => {
-    setAddBookIssue((prev) => !prev);
-  };
+//   const handleForm = async () => {
+//     setAddBookIssue((prev) => !prev);
+//   };
 
-  const token = useAppSelector(s=>s.auth.token)
+//   const token = useAppSelector(s=>s.auth.token)
 
-  const addIssueData = async () => {
-    try {
-      const result = await api.post('/book-issued/add', issueData, token ? token : '')
-      setIssueData(result)
-    } catch (error) {
-      console.log(error);
-    }
-  };
+//   const addIssueData = async () => {
+//     try {
+//       const result = await api.post('/book-issued/add', issueData, token ? token : '')
+//       setIssueData(result)
+//     } catch (error) {
+//       console.log(error);
+//     }
+//   };
 
-  return (
-    <section className="book-add-container font-[Poppins]!">
-      <button className="book-add-btn" onClick={handleForm}>
-        Approve Book
-      </button>
-      <div className="form-add-container font-[Poppins]!">
-        <form
-          className="book-add-form"
-          style={{ display: addBookIssue ? "flex" : "none" }}
-        >
-          <label htmlFor="bookName">
-            Book Id
-            <input
-              type="text"
-              name={issueData.request_id}
-              id={issueData.request_id}
-              placeholder="Enter the Request ID"
-              onChange={(e) =>
-                setIssueData((prev) => ({
-                  ...prev,
-                  request_id: e.target.value,
-                }))
-              }
-            />
-          </label>
-          <div className="form-add-btn">
-            <button onClick={handleForm}>Cancel</button>
-            <button onClick={addIssueData}>Purchase</button>
-          </div>
-        </form>
-      </div>
-    </section>
-  );
-}
+//   return (
+//     <section className="book-add-container font-[Poppins]!">
+//       <button className="book-add-btn" onClick={handleForm}>
+//         Approve Book
+//       </button>
+//       <div className="form-add-container font-[Poppins]!">
+//         <form
+//           className="book-add-form"
+//           style={{ display: addBookIssue ? "flex" : "none" }}
+//         >
+//           <label htmlFor="bookName">
+//             Book Id
+//             <input
+//               type="text"
+//               name={issueData.request_id}
+//               id={issueData.request_id}
+//               placeholder="Enter the Request ID"
+//               onChange={(e) =>
+//                 setIssueData((prev) => ({
+//                   ...prev,
+//                   request_id: e.target.value,
+//                 }))
+//               }
+//             />
+//           </label>
+//           <div className="form-add-btn">
+//             <button onClick={handleForm}>Cancel</button>
+//             <button onClick={addIssueData}>Purchase</button>
+//           </div>
+//         </form>
+//       </div>
+//     </section>
+//   );
+// }
 
 export default function BookRequestShow() {
-  const token = localStorage.getItem("token-info");
+  const token = useAppSelector(s=>s.auth.token)
 
   const [request, setRequests] = useState([
     {
@@ -97,7 +97,7 @@ export default function BookRequestShow() {
     },
   ]);
 
-  const LoadRequests = async () => {
+  const loadRequests = async () => {
     try {
       const data = await api.get('/request', token ? token : '');
       const withIds = await data.Requests.map((item: bookRequest) =>
@@ -133,7 +133,7 @@ export default function BookRequestShow() {
       }
       const result = response.json();
 
-      LoadRequests();
+      loadRequests();
     } catch (error) {
       console.error("Error approving request:", error);
     }
@@ -164,7 +164,7 @@ export default function BookRequestShow() {
   const statValues = stats ? [stats.booksRequested] : [null];
 
   useEffect(() => {
-    LoadRequests();
+    loadRequests();
     console.log("ssdnfbsnfbs");
   }, []);
 

@@ -5,7 +5,7 @@ import Typography from "@mui/material/Typography";
 import ReusableTable, { Column } from "./Table";
 import { UsersItems } from "../data/CardData";
 import { Card } from "./Card";
-import { useAppSelector } from "../redux/hooks/hooks";
+import { useAppSelector } from "../redux/hooks";
 import { api } from "../utils/api";
 
 interface user {
@@ -31,7 +31,7 @@ const columns: readonly Column<user>[] = [
   { id: "actions", label: "Activities", minWidth: 150, align: "left" },
 ];
 
-export default function Userform() {
+export default function UserForm() {
   const [addUser, setAddUser] = React.useState(false);
   const [userData, setUserData] = React.useState({
     name: "",

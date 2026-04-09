@@ -41,7 +41,7 @@ export function BookIssueAdd() {
     setAddIssue((prev) => !prev);
   };
 
-  const token = useAppSelector(state=>state.auth.token)
+  const token = useAppSelector(state => state.auth.token)
 
   const addBookData = async () => {
     try {
@@ -129,7 +129,7 @@ export default function IssueBooksTable() {
 
   const [stats, setStats] = useState<Stats | null>(null);
 
-   useEffect(() => {
+  useEffect(() => {
     fetch("http://localhost:5001/api/stats", { credentials: "include" })
       .then((res) => res.json())
       .then((data: Stats) => setStats(data))
@@ -140,7 +140,7 @@ export default function IssueBooksTable() {
     ? [stats.booksIssued, stats.booksRequested]
     : [null, null, null, null, null];
 
-  const token = localStorage.getItem("token-info");
+  const token = useAppSelector(s => s.auth.token)
 
   const LoadIssues = async () => {
     try {
@@ -162,7 +162,7 @@ export default function IssueBooksTable() {
       await api.delete(`/book-issued/delete/${row._id}`, token ? token : '')
       LoadIssues();
       setIssues((prev) => prev.filter((record) => record._id !== row._id));
-      
+
       return { success: true };
     } catch (error) {
       console.error("Error deleting record:", error);

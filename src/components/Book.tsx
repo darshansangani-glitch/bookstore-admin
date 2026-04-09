@@ -52,7 +52,7 @@ export function BookAdd() {
     setAddBook((prev) => !prev);
   };
 
-  const token = useAppSelector(s=>s.auth.token)
+  const token = useAppSelector(s => s.auth.token)
 
   // const toBase64 = uInt8Array => btoa(String.fromCharCode(...uInt8Array));
 
@@ -243,7 +243,7 @@ export default function BooksTable() {
     },
   ]);
 
-  const token = localStorage.getItem("token-info");
+  const token = useAppSelector(s => s.auth.token)
 
   const LoadBooks = async () => {
     try {

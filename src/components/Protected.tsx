@@ -1,5 +1,5 @@
 import { Navigate, Outlet } from "react-router-dom"
-import { useAppSelector } from "../redux/hooks/hooks";
+import { useAppSelector } from "../redux/hooks";
 
 
 export default function Protected() {

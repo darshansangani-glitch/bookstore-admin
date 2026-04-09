@@ -9,11 +9,8 @@ import { Card } from "./Card.js";
 import { jwtDecode } from "jwt-decode";
 import { JwtPayload } from "jsonwebtoken";
 import PurchaseEditForm from "./PurchaseEditForm.js";
-<<<<<<< Updated upstream
-=======
-import { useAppSelector } from "../redux/hooks/hooks.js";
+import { useAppSelector } from "../redux/hooks.js";
 import { api } from "../utils/api.js";
->>>>>>> Stashed changes
 
 interface CustomJwtPayload extends JwtPayload {
   id: string;
@@ -59,13 +56,7 @@ export function PurchaseInsertion() {
     purchase_quantity: "",
   });
 
-<<<<<<< Updated upstream
-  // const token = localStorage.getItem("token-info");
-  const token = localStorage.getItem("token-info");
-
-=======
   const token = useAppSelector((state) => state.auth.token)
->>>>>>> Stashed changes
   const decodedPayload = jwtDecode(token ?? "") as CustomJwtPayload;
 
   const userRole = decodedPayload.role;
@@ -183,9 +174,9 @@ export default function PurchaseDataShow() {
     setEditPurchaseData(purchase);
   };
 
-  const token = localStorage.getItem("token-info");
+  const token = useAppSelector(s => s.auth.token)
 
-  const LoadPurchases = async () => {
+  const LoadPurchases =   async () => {
     try {
       const data = await api.get('/purchase', token ? token : '');
       const withIds = data.Purchase.map((item: purchase) =>
@@ -238,7 +229,6 @@ export default function PurchaseDataShow() {
 
   useEffect(() => {
     LoadPurchases();
-    console.log("bashchj");
   }, []);
 
   return (
