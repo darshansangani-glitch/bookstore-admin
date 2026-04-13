@@ -10,7 +10,10 @@ export default function AppLayout() {
         <SideBar />
         <div className="flex flex-1 flex-col">
           <Header />
+          <div className="mt-14 p-5">
+
           <Protected />
+          </div>
         </div>
       </div>
     </>
