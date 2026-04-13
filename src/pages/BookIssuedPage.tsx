@@ -1,9 +1,11 @@
-import IssueBooksTable from "../components/BookIssue/BookIssue.js";
+import IssueBooksTable from "../components/BookIssue.js";
 
 export default function BookIssuedPage() {
   return (
     <>
-      <IssueBooksTable />
+      <div className=" w-full pt-20! font-[Poppins]! ml-auto p-5">
+        <IssueBooksTable />
+      </div>
     </>
   );
 }

@@ -1,6 +1,6 @@
 import { FaBook, FaLayerGroup, FaBookOpen, FaInbox, FaShoppingCart, FaUser } from "react-icons/fa";
 
-export const dashboardItems = [
+export const dashbardItems = [
   {
     iconColor: "#E66239",
     bgColor: "#FCEFEB",

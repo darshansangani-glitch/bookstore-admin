@@ -6,10 +6,10 @@ import Protected from "../components/Protected.js";
 export default function AppLayout() {
   return (
     <>
-      <div className="w-full">
+      <div className="w-full flex flex-1">
         <SideBar />
-        <Header />
-        <div className="mt-14! p-5 ml-53!">
+        <div className="flex flex-1 flex-col">
+          <Header />
           <Protected />
         </div>
       </div>
