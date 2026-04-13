@@ -44,6 +44,12 @@ export default function BooksTable() {
     const [editBookData, setEditBookData] = React.useState<book | null>(null);
     // const [deleteBook, setDeleteBook] = React.useState<boolean | null>(false);
     // const [deleteBookId, setDeleteBookId] = React.useState<boolean | null>(false);
+    const [page, setPage] = React.useState(0);
+    const [rowsPerPage, setRowsPerPage] = React.useState(10);
+    const [search, setSearch] = React.useState("");
+    const [total, setTotal] = React.useState(0);
+
+
 
     const handleEdit = (book: book) => {
         setEditBookId(book._id);
@@ -67,12 +73,13 @@ export default function BooksTable() {
 
     const LoadBooks = async () => {
         try {
-            const data = await api.get('/book', token ? token : '')
+            const data = await api.get(`/book?page=${page + 1}&limit=${rowsPerPage}&search=${search}`, token ? token : '');
             console.log(data)
             const withIds = data.Books.map((item: book) =>
                 item._id ? item : { ...item, _id: item._id },
             );
             setBooks(withIds);
+            setTotal(data.total);
         } catch (error) {
             if (error) {
                 console.log({ message: error });
@@ -119,10 +126,10 @@ export default function BooksTable() {
     React.useEffect(() => {
         LoadBooks();
     }, []);
-   
+
     return (
         <>
-            <div className="w-full! box-border! h-full  items-center justify-between relative">
+            <div className="w-full! box-border! h-full  items-center justify-between relative ">
                 <BookAdd />
                 <div className="flex box-border! flex-wrap font-[Poppins]! gap-6 mt-4">
                     {BookItems.map((item, i) => (
@@ -149,6 +156,20 @@ export default function BooksTable() {
                         onEdit={handleEdit}
                         onDelete={deleteRecord}
                         searchPlaceholder="Search Books..."
+                        serverSide = {true}
+                        total={total}
+                        page={page}
+                        search = {search}
+                        rowsPerPage={rowsPerPage}
+                        onPageChange={(newPage: number) => setPage(newPage)}
+                        onRowsPerPageChange={(newRows: number) => {
+                            setRowsPerPage(newRows);
+                            setPage(0);
+                        }}
+                        onSearch={(term: string) => {
+                            setSearch(term);
+                            setPage(0);
+                        }}
                     />
                 </div>
             </div>

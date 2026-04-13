@@ -1,9 +1,4 @@
-import Box from "@mui/material/Box";
-import IconButton from "@mui/material/IconButton";
-import InputAdornment from "@mui/material/InputAdornment";
-import InputBase from "@mui/material/InputBase";
-import TablePagination from "@mui/material/TablePagination";
-import Typography from "@mui/material/Typography";
+import { FcPrevious, FcNext } from "react-icons/fc";
 import React from "react";
 import { FaSearch } from "react-icons/fa";
 import { RiDeleteBin4Line, RiEditLine } from "react-icons/ri";
@@ -26,10 +21,18 @@ interface ReusableTableProps<T> {
   onDelete?: (row: T) => void;
   onApprove?: (row: T) => void;
   uniqueKey?: keyof T;
+  total?: number,
+  page?: number,
+  search?: string,
+  serverSide?: boolean,
+  rowsPerPage?: number,
+  onPageChange?: (newPage: number) => void,
+  onRowsPerPageChange?: (newRows: number) => void,
+  onSearch?: (term: string) => void,
 }
 
 export default function ReusableTable<
-  T extends { _id?: string | number; id?: string | number },
+  T extends { _id?: string | number; id?: string | number }
 >({
   columns,
   data,
@@ -39,86 +42,89 @@ export default function ReusableTable<
   onEdit,
   onDelete,
   uniqueKey = "_id" as keyof T,
+  total,
+  serverSide,
+  page,
+  // search,
+  rowsPerPage,
+  onPageChange,
+  onRowsPerPageChange,
+  onSearch
 }: ReusableTableProps<T>) {
-  const [page, setPage] = React.useState(0);
-  const [searchTerm, setSearchTerm] = React.useState("");
+  const [searchValue, setSearchValue] = React.useState<string>('')
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(event.target.value);
-    setPage(0);
+    const value = event.target.value;
+    setSearchValue(value);
+    if (serverSide) {
+      if (onSearch) onSearch(value);
+    }
   };
 
   const filteredData = React.useMemo(() => {
-    if (!searchTerm) return data;
-    const lowercasedTerm = searchTerm.toLowerCase();
+    if (serverSide) return data
+    if (!searchValue) return data;
+    const lowercasedTerm = searchValue.toLowerCase();
 
     return data.filter((row) => {
       return Object.values(row).some((val) =>
         String(val).toLowerCase().includes(lowercasedTerm),
       );
     });
-  }, [data, searchTerm]);
+  }, [data, searchValue, serverSide, data]);
 
-  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const displayedData = React.useMemo(() => {
+    if (serverSide) return data;
+  }, [filteredData, page, rowsPerPage, serverSide, data]);
 
-  const handleChangePage = (event: unknown, newPage: number) => {
-    setPage(newPage);
+  const totalCount = serverSide ? total : filteredData.length;
+  const totalPages = (totalCount && rowsPerPage) && Math.ceil(totalCount / rowsPerPage);
+
+  const handleChangePage = (newPage: number) => {
+    if (serverSide)
+      if (onPageChange) onPageChange(newPage);
   };
-  const handleChangeRowsPerPage = (
-    event: React.ChangeEvent<HTMLInputElement>,
-  ) => {
-    setRowsPerPage(+event.target.value);
-    setPage(0);
-  };
 
-  const displayedData = filteredData.slice(
-    page * rowsPerPage,
-    page * rowsPerPage + rowsPerPage,
-  );
-
+  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const newRows = parseInt(event.target.value, 10);
+    if (serverSide) {
+      if (onRowsPerPageChange) onRowsPerPageChange(newRows);
+    };
+  }
   return (
     <>
       {(title || showSearch) && (
-        <Box sx={{ width: "100%", margin: "50px auto" }}>
-          {title && (
-            <Typography variant="h4" gutterBottom>
-              {title}
-            </Typography>
-          )}
+        <>
           {showSearch && (
-            <div className="flex  items-center-safe font-[Poppins]!  h-0 w-70  border-[1px solid #e5e5e5]">
-              <InputBase
-                className="border p-1 pl-2 rounded font-[Poppins]!"
-                sx={{ flex: 1 }}
+            <div className="flex  items-center font-[Poppins]! w-100 h-0 mt-5  p-5 border-[1px solid #e5e5e5]">
+              <input
+                id="search"
+                name="search"
+                className="border p-2 pl-3 rounded font-[Poppins]! w-full"
                 placeholder={searchPlaceholder}
-                inputProps={{ "aria-label": "search data" }}
-                value={searchTerm}
+                aria-label="search data"
+                value={searchValue}
                 onChange={handleSearchChange}
-                endAdornment={
-                  <InputAdornment position="end">
-                    <IconButton
-                      className="pl-2 rounded text-[20px]!  text-gray-400!"
-                      type="button"
-                      sx={{ p: "10px" }}
-                      aria-label="search"
-                    >
-                      <FaSearch />
-                    </IconButton>
-                  </InputAdornment>
-                }
               />
+              <button
+                className="p-3 items-center text-gray-400!"
+                type="button"
+                aria-label="search"
+              >
+                <FaSearch />
+              </button>
             </div>
           )}
-        </Box>
+        </>
       )}
-      <div className="card overflow-x-auto font-[Poppins]! mt-16">
-        <table className="border border-gray-200!">
-          <thead >
+      <div className=" card  overflow-x-auto font-[Poppins]! mt-5 ">
+        <table className="border-0!">
+          <thead className="rounded-t-xl!">
             <tr className="bg-gray-100">
               {columns.map((column) => (
                 <td
                   //   className="bg-[#f5f5f5]!   "
-                  className="text-[18px]! p-3"
+                  className="text-[18px]! h-14 p-3"
                   key={String(column.id)}
                   align={column.align || "left"}
                   style={{
@@ -132,8 +138,8 @@ export default function ReusableTable<
               ))}
             </tr>
           </thead>
-          <tbody>
-            {displayedData.length === 0 ? (
+          <tbody className="border border-gray-200">
+            {displayedData && displayedData.length === 0 ? (
               <tr>
                 <td
                   colSpan={columns.length}
@@ -144,9 +150,9 @@ export default function ReusableTable<
                 </td>
               </tr>
             ) : (
-              displayedData.map((row) => (
+              displayedData && displayedData.map((row) => (
                 <tr
-                  className="border-b hover:bg-gray-200!"
+                  className=" hover:bg-gray-200!"
                   role="checkbox"
                   tabIndex={-1}
                   key={String(row[uniqueKey] || Math.random())}
@@ -202,7 +208,7 @@ export default function ReusableTable<
                         align={column.align || "left"}
                         className={
                           column.id === "description"
-                            ? "whitespace-nowrap text-ellipsis border p-3 border-r-0 border-l-0 border-gray-300 overflow-hidden text-[16px]! max-w-43.75"
+                            ? "whitespace-nowrap text-ellipsis border p-3 border-r-0 border-l-0 border-gray-300 border-t-0 overflow-hidden text-[16px]! max-w-43.75"
                             : "p-3 text-[16px] border-b border-b-gray-300 border-r-0!"
                         }
                       >
@@ -217,16 +223,62 @@ export default function ReusableTable<
             )}
           </tbody>
         </table>
-        <TablePagination
-          rowsPerPageOptions={[10, 25, 100]}
-          component="div"
-          count={filteredData.length}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-        />
-      </div>
+
+        <div className="p-1 border border-t-0 rounded-b-xl border-slate-200 bg-slate-50/40 flex  justify-between items-center gap-8">
+          <div className="flex items-center gap-8">
+            <div className="flex items-center gap-4">
+              <div className="relative group">
+                <select
+                  className="p-3 text-slate-400 font-semibold text-[18px] cursor-pointer"
+                  value={rowsPerPage}
+                  onChange={handleChangeRowsPerPage}
+                >
+                  {[10, 20, 50, 100].map((count) => (
+                    <option key={count} value={count}>
+                      {count} rows
+                    </option>
+                  ))}
+                </select>
+
+              </div>
+            </div>
+            <div className="h-6 w-px bg-slate-200 hidden lg:block" />
+            <div className="text-[18px] font-semibold text-slate-400 font-[poppins] uppercase">
+              {total ?? 1 > 0
+                ? <><span className="text-slate-600">{(page ??0) * (rowsPerPage ?? 0) + 1} - {Math.min(((page ?? 0) + 1) * (rowsPerPage ?? 10), (total ?? 0))}</span> <span className="mx-1">of</span> <span className="text-slate-600">{total}</span> entries</>
+                : "No entries"}
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => handleChangePage(Math.max(0, (page ?? 0) - 1))}
+              disabled={page === 0}
+              className="p-3.5 flex items-center text-slate-400 font-semibold text-[18px] gap-2"
+            >
+              <FcPrevious size={18} /> Prev
+            </button>
+
+            <div className="flex items-center border p-1 font-semibold text-slate-400 rounded-4xl  border-slate-400 text-[18px]!">
+              <button
+                key={page}
+                onClick={() => handleChangePage(page ? page : 0)}
+                className="min-w-6 h-6  "
+              >
+                {page !== undefined && page + 1}
+              </button>
+            </div>
+
+            <button
+              onClick={() => handleChangePage(Math.min((totalPages ?? 0) - 1, page ? + 1 : + 0))}
+              disabled={page && page >= (totalPages ? totalPages : 1) - 1 || totalPages === 0}
+              className="p-3.5 flex items-center font-semibold text-slate-400 text-[18px] gap-2"
+            >
+              Next <FcNext size={18} />
+            </button>
+          </div>
+        </div>
+      </div >
     </>
   );
 }
