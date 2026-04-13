@@ -17,6 +17,8 @@ import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import Input from "@mui/material/Input";
 import { useNavigate } from "react-router-dom";
 import LightLogo from "../assets/lightLogo.png";
+import { login } from "../redux/features/slice/authSlice";
+import { useAppDispatch, useAppSelector } from "../redux/hooks";
 
 export default function Login() {
   const [showPassword, setShowPassword] = React.useState(false);
@@ -24,18 +26,13 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const [memoryToken, setMemoryToken] = useState("");
-
+  const dispatch = useAppDispatch()
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (memoryToken) {
-      navigate("/admin-home");
-    }
-  }, [memoryToken]);
+  const userToken = useAppSelector(s=>s.auth.token)
 
   const handleLogin = async () => {
-    const url = `${import.meta.env.VITE_API_URL}/login`;
+    const url = `${import.meta.env.VITE_API_URL}/user/login`;
 
     try {
       const response = await fetch(url, {
@@ -47,9 +44,9 @@ export default function Login() {
         body: JSON.stringify({ email, password }),
       });
       const result = await response.json();
-      localStorage.setItem("token-info", result.token);
-      setMemoryToken(result.token)
-      return memoryToken;
+      dispatch(login(result.token))
+      navigate('/admin-home')
+      return userToken;
     } catch (error) {
       console.error("Login error:", error);
       throw error;
