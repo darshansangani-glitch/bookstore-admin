@@ -5,6 +5,8 @@ import React, { useEffect, useState } from "react";
 import ReusableTable, { Column } from "./Table.js";
 import { BookIssuedItems } from "../data/CardData.js";
 import { Card } from "./Card.js";
+import { useAppSelector } from "../redux/hooks.js";
+import { api } from "../utils/api.js";
 
 interface issue {
   _id: string;
@@ -39,23 +41,14 @@ export function BookIssueAdd() {
     setAddIssue((prev) => !prev);
   };
 
-  const token = localStorage.getItem("token-info");
+  const token = useAppSelector(state => state.auth.token)
 
   const addBookData = async () => {
     try {
-      const url = `${import.meta.env.VITE_API_URL}/book-issued/add`;
-      const response = fetch(url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: token ? ` ${token}` : "",
-        },
-        body: JSON.stringify(issueData),
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          setIssueData(data);
-        });
+      console.log(issueData)
+      const data = await api.post('/book-issued/add', issueData, token ? token : '')
+      setIssueData(data);
+
     } catch (error) {
       console.log(error);
     }
@@ -136,7 +129,7 @@ export default function IssueBooksTable() {
 
   const [stats, setStats] = useState<Stats | null>(null);
 
-   useEffect(() => {
+  useEffect(() => {
     fetch("http://localhost:5001/api/stats", { credentials: "include" })
       .then((res) => res.json())
       .then((data: Stats) => setStats(data))
@@ -147,26 +140,12 @@ export default function IssueBooksTable() {
     ? [stats.booksIssued, stats.booksRequested]
     : [null, null, null, null, null];
 
-  const token = localStorage.getItem("token-info");
+  const token = useAppSelector(s => s.auth.token)
 
   const LoadIssues = async () => {
     try {
-      const url = `${import.meta.env.VITE_API_URL}/book-issued`;
-
-      const response = await fetch(url, {
-        method: "GET",
-        headers: {
-          Authorization: token ? ` ${token}` : "",
-        },
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error("Server error response:", errorText);
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const data = await response.json();
-      const withIds = data.Book_issueed.map((item: issue) =>
+      const data = await api.get('/book-issued', token ? token : '');
+      const withIds = data.Book_issue.map((item: issue) =>
         item._id ? item : { ...item, _id: item._id },
       );
       setIssues(withIds);
@@ -180,21 +159,10 @@ export default function IssueBooksTable() {
 
   const deleteRecord = async (row: issue) => {
     try {
-      const url = `${import.meta.env.VITE_API_URL}/book-issued/delete/${row._id}`;
-      const response = await fetch(url, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: token ? ` ${token}` : "",
-        },
-      });
-      if (!response.ok) {
-        throw new Error("Failed to delete the record");
-      }
-
+      await api.delete(`/book-issued/delete/${row._id}`, token ? token : '')
       LoadIssues();
       setIssues((prev) => prev.filter((record) => record._id !== row._id));
-      
+
       return { success: true };
     } catch (error) {
       console.error("Error deleting record:", error);

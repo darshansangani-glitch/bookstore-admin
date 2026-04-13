@@ -117,8 +117,8 @@ export default function ReusableTable<
             <tr className="bg-gray-100">
               {columns.map((column) => (
                 <td
-                //   className="bg-[#f5f5f5]!   "
-                className="text-[18px]! p-3"
+                  //   className="bg-[#f5f5f5]!   "
+                  className="text-[18px]! p-3"
                   key={String(column.id)}
                   align={column.align || "left"}
                   style={{
@@ -155,7 +155,7 @@ export default function ReusableTable<
                     if (column.id === "actions") {
                       return (
                         <td
-                    
+
                           key="actions"
                           align={column.align || "left"}
                           className=" p-3 text-[15px]! border-b border-b-gray-300! border-t-0 border-l-0"

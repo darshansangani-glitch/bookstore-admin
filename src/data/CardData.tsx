@@ -58,7 +58,7 @@ export const dashbardItems = [
 ];
 
 export const BookItems = [
- {
+  {
     iconColor: "#E66239",
     bgColor: "#FCEFEB",
     icon: <FaBook />,
@@ -97,7 +97,7 @@ export const BookIssuedItems = [
     number: 0,
     trend: "Pending member requests",
   }
-] 
+]
 
 export const BookRequestedItems = [
   {
@@ -112,7 +112,7 @@ export const BookRequestedItems = [
 ]
 
 export const BookPurchasedItems = [
- {
+  {
     iconColor: "#8B5CF6",
     bgColor: "#F3EFFE",
     icon: <FaShoppingCart />,
@@ -125,7 +125,7 @@ export const BookPurchasedItems = [
 
 
 export const UsersItems = [
- {
+  {
     iconColor: "#8B5CF6",
     bgColor: "#F3EFFE",
     icon: <FaUser />,
