@@ -15,7 +15,7 @@ export function UserPage() {
   const userRole = decodedPayload.role;
 
   return (
-    <div className=" w-full pt-20! font-[Poppins]! ml-auto p-5">
+    <>
       {userRole === "Admin" ? (
         <UserForm />
       ) : (
@@ -28,6 +28,6 @@ export function UserPage() {
         </div>
       )}
       <UserTable />
-    </div>
+    </>
   );
 }
