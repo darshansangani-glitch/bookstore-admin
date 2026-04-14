@@ -43,6 +43,10 @@ export default function IssueBooksTable() {
       book_status: "",
     },
   ]);
+  const [page, setPage] = React.useState(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const [search, setSearch] = React.useState("");
+  const [total, setTotal] = React.useState(0);
 
   const [stats, setStats] = useState<Stats | null>(null);
 
@@ -61,11 +65,12 @@ export default function IssueBooksTable() {
 
   const LoadIssues = async () => {
     try {
-      const data = await api.get('/book-issued', token ? token : '');
-      const withIds = data.Book_issue.map((item: issue) =>
+      const data = await api.get(`/book-issued?page=${page + 1}&limit=${rowsPerPage}&search=${search}`, token ? token : '');
+      const withIds = data.Issues.map((item: issue) =>
         item._id ? item : { ...item, _id: item._id },
       );
       setIssues(withIds);
+      setTotal(data.totalCount)
     } catch (error) {
       if (error) {
         console.log({ message: error });
@@ -90,7 +95,7 @@ export default function IssueBooksTable() {
 
   React.useEffect(() => {
     LoadIssues();
-  }, []);
+  }, [search, page]);
 
   return (
     <>
@@ -110,6 +115,20 @@ export default function IssueBooksTable() {
           data={issues}
           onDelete={deleteRecord}
           searchPlaceholder="Search Books..."
+          serverSide={true}
+          total={total}
+          page={page}
+          search={search}
+          rowsPerPage={rowsPerPage}
+          onPageChange={(newPage: number) => setPage(newPage)}
+          onRowsPerPageChange={(newRows: number) => {
+            setRowsPerPage(newRows);
+            setPage(0);
+          }}
+          onSearch={(term: string) => {
+            setSearch(term);
+            setPage(0);
+          }}
         />
       </div>
     </>
