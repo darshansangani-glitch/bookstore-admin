@@ -182,16 +182,22 @@ export function UserTable() {
       role: "",
     },
   ]);
+  const [page, setPage] = React.useState(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const [search, setSearch] = React.useState("");
+  const [total, setTotal] = React.useState(0);
+
 
   const token = useAppSelector(s => s.auth.token)
 
   const LoadUsers = async () => {
     try {
-      const data = await api.get('/user', token ? token : '');
+      const data = await api.get(`/user?page=${page + 1}&limit=${rowsPerPage}&search=${search}`, token ? token : '');
       const withIds = data.Users.map((item: user) =>
         item._id ? item : { ...item, _id: item._id },
       );
       setUser(withIds);
+      setTotal(data.totalCount)
     } catch (error) {
       if (error) {
         console.log({ message: error });
@@ -225,7 +231,7 @@ export function UserTable() {
 
   React.useEffect(() => {
     LoadUsers();
-  }, []);
+  }, [search, page]);
 
   return (
     <>
@@ -242,7 +248,21 @@ export function UserTable() {
         columns={columns}
         data={user}
         onDelete={deleteRecord}
-        searchPlaceholder="Search Books..."
+        searchPlaceholder="Search Users..."
+        serverSide={true}
+        total={total}
+        page={page}
+        search={search}
+        rowsPerPage={rowsPerPage}
+        onPageChange={(newPage: number) => setPage(newPage)}
+        onRowsPerPageChange={(newRows: number) => {
+          setRowsPerPage(newRows);
+          setPage(0);
+        }}
+        onSearch={(term: string) => {
+          setSearch(term);
+          setPage(0);
+        }}
       />
     </>
   );
