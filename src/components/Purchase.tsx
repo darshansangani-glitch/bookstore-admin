@@ -168,6 +168,11 @@ export default function PurchaseDataShow() {
       purchase_quantity: "",
     },
   ]);
+  const [page, setPage] = React.useState(0)
+  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const [search, setSearch] = React.useState("");
+  const [total, setTotal] = React.useState(0);
+
   const handleEdit = (purchase: purchase) => {
     console.log("Edit hurray");
     setEditPurchaseId(purchase._id);
@@ -176,13 +181,15 @@ export default function PurchaseDataShow() {
 
   const token = useAppSelector(s => s.auth.token)
 
-  const LoadPurchases =   async () => {
+  const LoadPurchases = async () => {
     try {
-      const data = await api.get('/purchase', token ? token : '');
-      const withIds = data.Purchase.map((item: purchase) =>
+      console.log(search)
+      const data = await api.get(`/purchase?page=${page + 1}&limit=${rowsPerPage}&search=${search}`, token ? token : '');
+      const withIds = data.Purchases.map((item: purchase) =>
         item._id ? item : { ...item, _id: item._id },
       );
       setPurchases(withIds);
+      setTotal(data.totalCount);
     } catch (error) {
       if (error) {
         console.log({ message: error });
@@ -229,7 +236,7 @@ export default function PurchaseDataShow() {
 
   useEffect(() => {
     LoadPurchases();
-  }, []);
+  }, [search,page]);
 
   return (
     <div>
@@ -259,6 +266,20 @@ export default function PurchaseDataShow() {
         onEdit={handleEdit}
         onDelete={deleteRecord}
         searchPlaceholder="Search Books..."
+        serverSide={true}
+        total={total}
+        page={page}
+        search={search}
+        rowsPerPage={rowsPerPage}
+        onPageChange={(newPage: number) => setPage(newPage)}
+        onRowsPerPageChange={(newRows: number) => {
+          setRowsPerPage(newRows);
+          setPage(0);
+        }}
+        onSearch={(term: string) => {
+          setSearch(term);
+          setPage(0);
+        }}
       />
     </div>
   );
