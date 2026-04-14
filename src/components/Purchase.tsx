@@ -9,6 +9,8 @@ import { Card } from "./Card.js";
 import { jwtDecode } from "jwt-decode";
 import { JwtPayload } from "jsonwebtoken";
 import PurchaseEditForm from "./PurchaseEditForm.js";
+import { useAppSelector } from "../redux/hooks.js";
+import { api } from "../utils/api.js";
 
 interface CustomJwtPayload extends JwtPayload {
   id: string;
@@ -54,9 +56,7 @@ export function PurchaseInsertion() {
     purchase_quantity: "",
   });
 
-  // const token = localStorage.getItem("token-info");
-  const token = localStorage.getItem("token-info");
-
+  const token = useAppSelector((state) => state.auth.token)
   const decodedPayload = jwtDecode(token ?? "") as CustomJwtPayload;
 
   const userRole = decodedPayload.role;
@@ -67,20 +67,8 @@ export function PurchaseInsertion() {
 
   const addPurchaseData = async () => {
     try {
-      const url = `${import.meta.env.VITE_API_URL}/purchase/add`;
-
-      const response = fetch(url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: token ? ` ${token}` : "",
-        },
-        body: JSON.stringify(purchaseData),
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          setPurchaseData(data);
-        });
+      const result = await api.post('/purchase/add', purchaseData, token ? token : '')
+      setPurchaseData(result)
     } catch (error) {
       console.log(error);
     }
@@ -165,7 +153,6 @@ export function PurchaseInsertion() {
 }
 
 export default function PurchaseDataShow() {
-  const [form, setForm] = React.useState(false);
   const [editPurchaseId, setEditPurchaseId] = React.useState<string | null>(
     null,
   );
@@ -181,35 +168,28 @@ export default function PurchaseDataShow() {
       purchase_quantity: "",
     },
   ]);
+  const [page, setPage] = React.useState(0)
+  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const [search, setSearch] = React.useState("");
+  const [total, setTotal] = React.useState(0);
+
   const handleEdit = (purchase: purchase) => {
     console.log("Edit hurray");
     setEditPurchaseId(purchase._id);
     setEditPurchaseData(purchase);
   };
 
-  const token = localStorage.getItem("token-info");
+  const token = useAppSelector(s => s.auth.token)
 
   const LoadPurchases = async () => {
     try {
-      const url = `${import.meta.env.VITE_API_URL}/purchase`;
-
-      const response = await fetch(url, {
-        method: "GET",
-        headers: {
-          Authorization: token ? ` ${token}` : "",
-        },
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error("Server error response:", errorText);
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const data = await response.json();
-      const withIds = data.Purchase.map((item: purchase) =>
+      console.log(search)
+      const data = await api.get(`/purchase?page=${page + 1}&limit=${rowsPerPage}&search=${search}`, token ? token : '');
+      const withIds = data.Purchases.map((item: purchase) =>
         item._id ? item : { ...item, _id: item._id },
       );
       setPurchases(withIds);
+      setTotal(data.totalCount);
     } catch (error) {
       if (error) {
         console.log({ message: error });
@@ -219,19 +199,7 @@ export default function PurchaseDataShow() {
 
   const updateRecord = async () => {
     try {
-      const url = `${import.meta.env.VITE_API_URL}/purchase/update/${editPurchaseId}`;
-      const response = await fetch(url, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: token ? ` ${token}` : "",
-        },
-        body: JSON.stringify(editPurchaseData),
-      });
-      if (!response.ok) {
-        throw new Error("Failed to update the record");
-      }
-
+      await api.put(`/purchase/update/${editPurchaseId}`, editPurchaseData, token ? token : '')
       setEditPurchaseId(null);
       setEditPurchaseData(null);
       LoadPurchases();
@@ -242,17 +210,7 @@ export default function PurchaseDataShow() {
 
   const deleteRecord = async (row: purchase) => {
     try {
-      const url = `${import.meta.env.VITE_API_URL}/purchase/delete/${row._id}`;
-      const response = await fetch(url, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: token ? ` ${token}` : "",
-        },
-      });
-      if (!response.ok) {
-        throw new Error("Failed to delete the record");
-      }
+      await api.delete(`/purchase/delete/${row._id}`, token ? token : '')
       setPurchases((prev) => prev.filter((record) => record._id !== row._id));
       return { success: true };
     } catch (error) {
@@ -278,8 +236,7 @@ export default function PurchaseDataShow() {
 
   useEffect(() => {
     LoadPurchases();
-    console.log("bashchj");
-  }, []);
+  }, [search,page]);
 
   return (
     <div>
@@ -309,6 +266,20 @@ export default function PurchaseDataShow() {
         onEdit={handleEdit}
         onDelete={deleteRecord}
         searchPlaceholder="Search Books..."
+        serverSide={true}
+        total={total}
+        page={page}
+        search={search}
+        rowsPerPage={rowsPerPage}
+        onPageChange={(newPage: number) => setPage(newPage)}
+        onRowsPerPageChange={(newRows: number) => {
+          setRowsPerPage(newRows);
+          setPage(0);
+        }}
+        onSearch={(term: string) => {
+          setSearch(term);
+          setPage(0);
+        }}
       />
     </div>
   );
