@@ -1,4 +1,4 @@
-import { dashbardItems } from "../data/CardData.js";
+import { dashboardItems } from "../data/CardData.js";
 import { Card } from "./Card.js";
 import { useEffect, useState } from "react";
 
@@ -23,18 +23,18 @@ export function Cards() {
 
   const statValues = stats
     ? [
-        stats.totalBooks,
-        stats.totalQuantity,
-        stats.booksIssued,
-        stats.booksRequested,
-        stats.booksPurchased,
-        stats.totalUsers,
-      ]
+      stats.totalBooks,
+      stats.totalQuantity,
+      stats.booksIssued,
+      stats.booksRequested,
+      stats.booksPurchased,
+      stats.totalUsers,
+    ]
     : [null, null, null, null, null, null];
 
   return (
     <div className="flex flex-wrap font-[Poppins]! gap-6 mt-4">
-      {dashbardItems.map((item, i) => (
+      {dashboardItems.map((item, i) => (
         <Card
           key={item.name}
           item={{ ...item, number: statValues[i] ?? item.number }}
@@ -47,13 +47,13 @@ export function Cards() {
 
 export default function Dashboard() {
   return (
-    <div className="bg-white pt-20!  w-full font-[Poppins]!   h-full   ml-auto items-center justify-between relative p-5">
+    <div className="bg-white  w-full font-[Poppins]!   h-full   ml-auto items-center justify-between relative">
       <div className="mb-6">
         <h1 className="text-4xl">
           <span className="text-red-500">Book</span>Worm DashBoard
         </h1>
         <p className="text-[15px]">
-          Library Books Statistic Visulizations Given Below....
+          Library Books Statistic Visualizations Given Below....
         </p>
       </div>
       <Cards />
