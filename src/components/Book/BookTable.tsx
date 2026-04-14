@@ -48,8 +48,8 @@ export default function BooksTable() {
     const [rowsPerPage, setRowsPerPage] = React.useState(10);
     const [search, setSearch] = React.useState("");
     const [total, setTotal] = React.useState(0);
-
-
+    const [category, setCategory] = React.useState("")
+    const [uniqueCate, setUniqueCate] = React.useState<string[]>()
 
     const handleEdit = (book: book) => {
         setEditBookId(book._id);
@@ -73,13 +73,16 @@ export default function BooksTable() {
 
     const LoadBooks = async () => {
         try {
-            const data = await api.get(`/book?page=${page + 1}&limit=${rowsPerPage}&search=${search}`, token ? token : '');
+
+
+            const data = await api.get(`/book?page=${page + 1}&limit=${rowsPerPage}&search=${search}&category=${category}`, token ? token : '');
             console.log(data)
             const withIds = data.Books.map((item: book) =>
                 item._id ? item : { ...item, _id: item._id },
             );
             setBooks(withIds);
-            setTotal(data.total);
+            setTotal(data.totalCount);
+            setUniqueCate(data.category)
         } catch (error) {
             if (error) {
                 console.log({ message: error });
@@ -124,9 +127,10 @@ export default function BooksTable() {
     };
 
     React.useEffect(() => {
-        LoadBooks();
-    }, []);
-
+        setTimeout(()=>{
+            LoadBooks();
+        },1000)
+    }, [search, page, category]);
     return (
         <>
             <div className="w-full! box-border! h-full  items-center justify-between relative ">
@@ -156,11 +160,12 @@ export default function BooksTable() {
                         onEdit={handleEdit}
                         onDelete={deleteRecord}
                         searchPlaceholder="Search Books..."
-                        serverSide = {true}
+                        serverSide={true}
                         total={total}
                         page={page}
-                        search = {search}
+                        search={search}
                         rowsPerPage={rowsPerPage}
+                        uniqueCategory={uniqueCate}
                         onPageChange={(newPage: number) => setPage(newPage)}
                         onRowsPerPageChange={(newRows: number) => {
                             setRowsPerPage(newRows);
@@ -169,6 +174,10 @@ export default function BooksTable() {
                         onSearch={(term: string) => {
                             setSearch(term);
                             setPage(0);
+                        }}
+                        onCategory={(term: string) => {
+                            setCategory(term)
+                            setPage(0)
                         }}
                     />
                 </div>

@@ -47,7 +47,7 @@ export default function IssueBooksTable() {
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const [search, setSearch] = React.useState("");
   const [total, setTotal] = React.useState(0);
-
+  const [category,setCategory] = React.useState("")
   const [stats, setStats] = useState<Stats | null>(null);
 
   useEffect(() => {
@@ -65,7 +65,7 @@ export default function IssueBooksTable() {
 
   const LoadIssues = async () => {
     try {
-      const data = await api.get(`/book-issued?page=${page + 1}&limit=${rowsPerPage}&search=${search}`, token ? token : '');
+      const data = await api.get(`/book-issued?page=${page + 1}&limit=${rowsPerPage}&search=${search}&category=${category}`, token ? token : '');
       const withIds = data.Issues.map((item: issue) =>
         item._id ? item : { ...item, _id: item._id },
       );
@@ -95,7 +95,7 @@ export default function IssueBooksTable() {
 
   React.useEffect(() => {
     LoadIssues();
-  }, [search, page]);
+  }, [search, page, category]);
 
   return (
     <>
@@ -129,6 +129,11 @@ export default function IssueBooksTable() {
             setSearch(term);
             setPage(0);
           }}
+          onCategory={(term: string) => {
+            setCategory(term);
+            setPage(0);
+          }}
+          uniqueCategory={['Issued',"Returned"]}
         />
       </div>
     </>

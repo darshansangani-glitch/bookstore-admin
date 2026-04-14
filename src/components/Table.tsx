@@ -1,6 +1,6 @@
 import { FcPrevious, FcNext } from "react-icons/fc";
 import React from "react";
-import { FaSearch } from "react-icons/fa";
+import { FaInbox, FaSearch } from "react-icons/fa";
 import { RiDeleteBin4Line, RiEditLine } from "react-icons/ri";
 
 export interface Column<T> {
@@ -29,6 +29,8 @@ interface ReusableTableProps<T> {
   onPageChange?: (newPage: number) => void,
   onRowsPerPageChange?: (newRows: number) => void,
   onSearch?: (term: string) => void,
+  onCategory?: (term: string) => void,
+  uniqueCategory?: string[]
 }
 
 export default function ReusableTable<
@@ -45,20 +47,19 @@ export default function ReusableTable<
   total,
   serverSide,
   page,
-  // search,
+  search,
   rowsPerPage,
   onPageChange,
   onRowsPerPageChange,
-  onSearch
+  onSearch,
+  onCategory,
+  uniqueCategory
 }: ReusableTableProps<T>) {
   const [searchValue, setSearchValue] = React.useState<string>('')
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value;
-    setSearchValue(value);
-    if (serverSide) {
-      if (onSearch) onSearch(value);
-    }
+
+    serverSide ? onSearch && onSearch(event.target.value) : setSearchValue(event.target.value);
   };
 
   const filteredData = React.useMemo(() => {
@@ -80,6 +81,11 @@ export default function ReusableTable<
   const totalCount = serverSide ? total : filteredData.length;
   const totalPages = (totalCount && rowsPerPage) && Math.ceil(totalCount / rowsPerPage);
 
+  const handleChangeCategory = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    console.log(e.currentTarget.value)
+    serverSide && onCategory && onCategory(e.currentTarget.value);
+  }
+
   const handleChangePage = (newPage: number) => {
     if (serverSide)
       if (onPageChange) onPageChange(newPage);
@@ -91,33 +97,48 @@ export default function ReusableTable<
       if (onRowsPerPageChange) onRowsPerPageChange(newRows);
     };
   }
+
+  console.log('length', displayedData)
   return (
     <>
       {(title || showSearch) && (
-        <>
+        <div className="flex mt-5 gap-5 ">
           {showSearch && (
-            <div className="flex  items-center font-[Poppins]! w-100 h-0 mt-5  p-5 border-[1px solid #e5e5e5]">
-              <input
-                id="search"
-                name="search"
-                className="border p-2 pl-3 rounded font-[Poppins]! w-full"
-                placeholder={searchPlaceholder}
-                aria-label="search data"
-                value={searchValue}
-                onChange={handleSearchChange}
-              />
+            <div className="flex items-center font-[Poppins]! w-150   pl-0 border rounded-xl border-slate-400 ">
               <button
-                className="p-3 items-center text-gray-400!"
+                className="p-3 items-center text-gray-400! "
                 type="button"
                 aria-label="search"
               >
-                <FaSearch />
+                <FaSearch  className="text-xl"/>
               </button>
+              <input
+                id="search"
+                name="search"
+                className=" p-3 pl-0 font-[Poppins]! w-full focus:outline-0!"
+                placeholder={searchPlaceholder}
+                aria-label="search data"
+                value={search}
+                onChange={handleSearchChange}
+              />
+
+            </div>
+
+          )}
+          {onCategory && (
+            <div className="border w-50  p-2 text-slate-400 border-slate-400 flex justify-center rounded-xl">
+              <select name="category" id="category" className="focus:outline-0! bg-white!" onChange={handleChangeCategory}>
+                <option value="" defaultChecked>--Select-Category--</option>
+                {uniqueCategory?.map(item => (
+                  <option key={item} value={item}>{item}</option>
+
+                ))}
+              </select>
             </div>
           )}
-        </>
+        </div>
       )}
-      <div className=" card  overflow-x-auto font-[Poppins]! mt-5 ">
+      <div className=" card border-slate-200 border  overflow-x-auto font-[Poppins]! mt-5 ">
         <table className="border-0!">
           <thead className="rounded-t-xl!">
             <tr className="bg-gray-100">
@@ -138,21 +159,22 @@ export default function ReusableTable<
               ))}
             </tr>
           </thead>
-          <tbody className="border border-gray-200">
-            {displayedData && displayedData.length === 0 ? (
-              <tr>
+          <tbody>
+            {(displayedData && displayedData.length === 0) || !displayedData ? (
+              <tr className="border-b border-b-slate-200 ">
                 <td
                   colSpan={columns.length}
                   align="center"
                   style={{ padding: "20px" }}
+                  className="text-xl font-mono font-medium"
                 >
-                  No data available
+                 <FaInbox className="text-5xl! text-slate-400"/> No data available
                 </td>
               </tr>
             ) : (
-              displayedData && displayedData.map((row) => (
+              displayedData.length>0 && displayedData.map((row) => (
                 <tr
-                  className=" hover:bg-gray-200!"
+                  className=" hover:bg-gray-200! border-b   border-gray-300!"
                   role="checkbox"
                   tabIndex={-1}
                   key={String(row[uniqueKey] || Math.random())}
@@ -164,7 +186,7 @@ export default function ReusableTable<
 
                           key="actions"
                           align={column.align || "left"}
-                          className=" p-3 text-[15px]! border-b border-b-gray-300! border-t-0 border-l-0"
+                          className=" p-3 text-[15px]!"
                         >
                           {(onEdit || onDelete) && (
                             <div className="flex gap-0.5">
@@ -208,8 +230,8 @@ export default function ReusableTable<
                         align={column.align || "left"}
                         className={
                           column.id === "description"
-                            ? "whitespace-nowrap text-ellipsis border p-3 border-r-0 border-l-0 border-gray-300 border-t-0 overflow-hidden text-[16px]! max-w-43.75"
-                            : "p-3 text-[16px] border-b border-b-gray-300 border-r-0!"
+                            ? "whitespace-nowrap text-ellipsis  p-3 overflow-hidden text-[16px]! max-w-43.75"
+                            : "p-3 text-[16px] "
                         }
                       >
                         {column.format
@@ -224,7 +246,7 @@ export default function ReusableTable<
           </tbody>
         </table>
 
-        <div className="p-1 border border-t-0 rounded-b-xl border-slate-200 bg-slate-50/40 flex  justify-between items-center gap-8">
+        <div className="p-1 bg-slate-50/40 flex justify-between items-center gap-8">
           <div className="flex items-center gap-8">
             <div className="flex items-center gap-4">
               <div className="relative group">
@@ -245,7 +267,7 @@ export default function ReusableTable<
             <div className="h-6 w-px bg-slate-200 hidden lg:block" />
             <div className="text-[18px] font-semibold text-slate-400 font-[poppins] uppercase">
               {total ?? 1 > 0
-                ? <><span className="text-slate-600">{(page ??0) * (rowsPerPage ?? 0) + 1} - {Math.min(((page ?? 0) + 1) * (rowsPerPage ?? 10), (total ?? 0))}</span> <span className="mx-1">of</span> <span className="text-slate-600">{total}</span> entries</>
+                ? <><span className="text-slate-600">{(page ?? 0) * (rowsPerPage ?? 0) + 1} - {Math.min(((page ?? 0) + 1) * (rowsPerPage ?? 10), (total ?? 0))}</span> <span className="mx-1">of</span> <span className="text-slate-600">{total}</span> entries</>
                 : "No entries"}
             </div>
           </div>
@@ -265,7 +287,7 @@ export default function ReusableTable<
                 onClick={() => handleChangePage(page ? page : 0)}
                 className="min-w-6 h-6  "
               >
-                {page !== undefined && page + 1}
+                {page ? page + 1 : 1}
               </button>
             </div>
 

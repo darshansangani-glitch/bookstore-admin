@@ -100,10 +100,11 @@ export default function BookRequestShow() {
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const [search, setSearch] = React.useState("");
   const [total, setTotal] = React.useState(0);
+  const [status, setStatus] = React.useState('')
 
   const loadRequests = async () => {
     try {
-      const data = await api.get(`/request?page=${page + 1}&limit=${rowsPerPage}&search=${search}`, token ? token : '');
+      const data = await api.get(`/request?page=${page + 1}&limit=${rowsPerPage}&search=${search}&status=${status}`, token ? token : '');
       console.log(data)
       const withIds =  data.Requests.map((item: bookRequest) =>
         item._id ? item : { ...item, _id: item._id },
@@ -171,7 +172,7 @@ export default function BookRequestShow() {
 
   useEffect(() => {
     loadRequests();
-  }, [search, page]);
+  }, [search, page, status]);
 
 
   return (
@@ -215,6 +216,11 @@ export default function BookRequestShow() {
               setSearch(term);
               setPage(0);
             }}
+            onCategory={(term: string) => {
+              setStatus(term);
+              setPage(0);
+            }}
+            uniqueCategory={['Pending',"Approved","Rejected"]}
           />
         </div>
       </div>
