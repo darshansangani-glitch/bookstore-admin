@@ -28,7 +28,7 @@ const columns: readonly Column<user>[] = [
     minWidth: 150,
     align: "left",
   },
-  { id: "actions", label: "Activities", minWidth: 150, align: "left" },
+  { id: "actions", label: "Activities", minWidth: 10, align: "left" },
 ];
 
 export default function UserForm() {
