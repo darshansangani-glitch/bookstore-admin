@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import ReusableTable, { Column } from "./Table.js";
 import { BookRequestedItems } from "../data/CardData.js";
 import { Card } from "./Card.js";
@@ -8,7 +8,7 @@ import { api } from "../utils/api.js";
 interface bookRequest {
   _id: string;
   user_id: string;
-  book_id:string,
+  book_id: string,
   book_name: string;
   timestamp: string;
   req_status: string;
@@ -21,7 +21,7 @@ interface Stats {
 
 const columns: readonly Column<bookRequest>[] = [
   { id: "user_id", label: "User Id", minWidth: 150, align: "left" },
-  { id: "book_name", label: "Book Name", minWidth: 150, align: "left" },
+  { id: "book_id", label: "Book Id", minWidth: 150, align: "left" },
   { id: "timestamp", label: "TimeStamp", minWidth: 150, align: "left" },
   { id: "req_status", label: "Request Status", minWidth: 150, align: "left" },
   { id: "actions", label: "Activity", minWidth: 150, align: "left" },
@@ -84,26 +84,32 @@ const columns: readonly Column<bookRequest>[] = [
 // }
 
 export default function BookRequestShow() {
-  const token = useAppSelector(s=>s.auth.token)
+  const token = useAppSelector(s => s.auth.token)
 
   const [request, setRequests] = useState([
     {
       _id: "",
       user_id: "",
-      book_id:"",
+      book_id: "",
       book_name: "",
       timestamp: "",
       req_status: "",
     },
   ]);
+  const [page, setPage] = React.useState(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const [search, setSearch] = React.useState("");
+  const [total, setTotal] = React.useState(0);
 
   const loadRequests = async () => {
     try {
-      const data = await api.get('/request', token ? token : '');
-      const withIds = await data.Requests.map((item: bookRequest) =>
+      const data = await api.get(`/request?page=${page + 1}&limit=${rowsPerPage}&search=${search}`, token ? token : '');
+      console.log(data)
+      const withIds =  data.Requests.map((item: bookRequest) =>
         item._id ? item : { ...item, _id: item._id },
       );
       setRequests(withIds);
+      setTotal(data.totalCount)
     } catch (error) {
       if (error) {
         console.log({ message: error });
@@ -141,7 +147,7 @@ export default function BookRequestShow() {
 
   const deleteRecord = async (row: bookRequest) => {
     try {
-      const result = await api.delete(`/request/delete/${row._id}`, token ? token : '')
+      await api.delete(`/request/delete/${row._id}`, token ? token : '')
       console.log("deleted record");
       setRequests((prev) => prev.filter((record) => record._id !== row._id));
       return { success: true };
@@ -165,9 +171,8 @@ export default function BookRequestShow() {
 
   useEffect(() => {
     loadRequests();
-    console.log("ssdnfbsnfbs");
-  }, []);
-  
+  }, [search, page]);
+
 
   return (
     <>
@@ -196,6 +201,20 @@ export default function BookRequestShow() {
             onApprove={approveRequest}
             onDelete={deleteRecord}
             searchPlaceholder="Search Books..."
+            serverSide={true}
+            total={total}
+            page={page}
+            search={search}
+            rowsPerPage={rowsPerPage}
+            onPageChange={(newPage: number) => setPage(newPage)}
+            onRowsPerPageChange={(newRows: number) => {
+              setRowsPerPage(newRows);
+              setPage(0);
+            }}
+            onSearch={(term: string) => {
+              setSearch(term);
+              setPage(0);
+            }}
           />
         </div>
       </div>
