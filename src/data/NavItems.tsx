@@ -6,14 +6,14 @@ import { CiLogin } from "react-icons/ci";
 import { JSX } from "react";
 
 interface ItemData {
-  id:number,
+  id: number,
   name: string;
   logo: JSX.Element;
   text: string;
   route: string;
 }
 
-export const mainNavItems:ItemData[] = [
+export const mainNavItems: ItemData[] = [
   {
     id: 0,
     name: "Home",
@@ -51,9 +51,9 @@ export const mainNavItems:ItemData[] = [
     route: "/book-issue",
   },
   {
-     id: 5,
+    id: 5,
     name: "Users",
-    logo: <FaUser/>,
+    logo: <FaUser />,
     text: "Users",
     route: "/user",
   }
@@ -67,5 +67,5 @@ export const AccountItems = [
     text: "Log In",
     route: "/",
   },
- 
+
 ]
