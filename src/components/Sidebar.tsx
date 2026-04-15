@@ -13,13 +13,15 @@ import darkLogo from "../assets/darkLogo.png";
 import { useNavigate } from "react-router-dom";
 import { MdLogout } from "react-icons/md";
 import { useState } from "react";
+import { useAppDispatch } from "../redux/hooks.js";
+import { logout } from "../redux/features/slice/authSlice.js";
 
 const drawerWidth = 240;
 
 export default function SideBar() {
   const [location, setLocation] = useState(0);
   const navigate = useNavigate();
-
+  const dispatch = useAppDispatch()
   const handleLogOut = async (e: any) => {
     e.preventDefault();
     localStorage.removeItem("token-info");
@@ -85,7 +87,7 @@ export default function SideBar() {
                 disablePadding
                 className=" w-45!  ml-auto  mr-auto   hover:bg-[#FDF0EC] rounded-[13px]! "
               >
-                <ListItemButton onClick={handleLogOut}>
+                <ListItemButton onClick={() => dispatch(logout())}>
                   <ListItemIcon className="text-[16px]! items-center! gap-2 hover:text-red-600!">
                     <MdLogout />
                     <ListItemText className="text-[15px]!" primary="Log Out" />
