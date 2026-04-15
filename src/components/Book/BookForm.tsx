@@ -29,12 +29,10 @@ export default function BookForm({ editBookData,
   handleForm,
   setBookData,
   addBook,
-  bookData,
   addBookData,
   setEditBookId,
   setEditBookData,
-  updateRecord,
-  editBookId }: BookFormProps) {
+  updateRecord  }: BookFormProps) {
   return (
     <div
       className={`fixed inset-0 z-4000 flex items-center justify-center transition-opacity ${addBook
@@ -278,7 +276,7 @@ export default function BookForm({ editBookData,
                 Add Book
               </button>
             )}
-            {editBookId && (
+            {editBookData && (
               <button
                 className="w-full bg-green-400 h-12 rounded-xl border-0 text-xl items-center cursor-pointer hover:bg-green-600 flex justify-center text-white font-semibold"
                 onClick={updateRecord}

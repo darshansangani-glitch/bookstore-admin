@@ -38,7 +38,7 @@ export default function BookIssueAdd() {
           <IssueForm addBookIssueData={addBookIssueData} issueData={issueData.request_id} handleForm= {handleForm} addIssue={addIssue} setIssueData={setIssueData} />
       )}
       <button
-        className="flex text-amber-50 w-40 items-center pl-8 pr-2 bg-sky-500 h-10 mr-5 rounded"
+        className="flex text-amber-50 w-fit items-center p-5 bg-sky-500 h-10 rounded"
         onClick={handleForm}
       >
         Approve Issue
