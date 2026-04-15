@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
-import ReusableTable, { Column } from "./Table.js";
-import { BookRequestedItems } from "../data/CardData.js";
-import { Card } from "./Card.js";
-import { useAppSelector } from "../redux/hooks.js";
-import { api } from "../utils/api.js";
+import ReusableTable, { Column } from "../Table.js";
+import { BookRequestedItems } from "../../data/CardData.js";
+import { Card } from "../Card.js";
+import { useAppSelector } from "../../redux/hooks.js";
+import { api } from "../../utils/api.js";
 
 interface bookRequest {
   _id: string;
@@ -27,61 +27,6 @@ const columns: readonly Column<bookRequest>[] = [
   { id: "actions", label: "Activity", minWidth: 150, align: "left" },
 ];
 
-// export function BookRequest() {
-//   const [addBookIssue, setAddBookIssue] = useState(false);
-//   const [issueData, setIssueData] = useState({
-//     request_id: "",
-//   });
-
-//   const handleForm = async () => {
-//     setAddBookIssue((prev) => !prev);
-//   };
-
-//   const token = useAppSelector(s=>s.auth.token)
-
-//   const addIssueData = async () => {
-//     try {
-//       const result = await api.post('/book-issued/add', issueData, token ? token : '')
-//       setIssueData(result)
-//     } catch (error) {
-//       console.log(error);
-//     }
-//   };
-
-//   return (
-//     <section className="book-add-container font-[Poppins]!">
-//       <button className="book-add-btn" onClick={handleForm}>
-//         Approve Book
-//       </button>
-//       <div className="form-add-container font-[Poppins]!">
-//         <form
-//           className="book-add-form"
-//           style={{ display: addBookIssue ? "flex" : "none" }}
-//         >
-//           <label htmlFor="bookName">
-//             Book Id
-//             <input
-//               type="text"
-//               name={issueData.request_id}
-//               id={issueData.request_id}
-//               placeholder="Enter the Request ID"
-//               onChange={(e) =>
-//                 setIssueData((prev) => ({
-//                   ...prev,
-//                   request_id: e.target.value,
-//                 }))
-//               }
-//             />
-//           </label>
-//           <div className="form-add-btn">
-//             <button onClick={handleForm}>Cancel</button>
-//             <button onClick={addIssueData}>Purchase</button>
-//           </div>
-//         </form>
-//       </div>
-//     </section>
-//   );
-// }
 
 export default function BookRequestShow() {
   const token = useAppSelector(s => s.auth.token)
@@ -106,7 +51,7 @@ export default function BookRequestShow() {
     try {
       const data = await api.get(`/request?page=${page + 1}&limit=${rowsPerPage}&search=${search}&status=${status}`, token ? token : '');
       console.log(data)
-      const withIds =  data.Requests.map((item: bookRequest) =>
+      const withIds = data.Requests.map((item: bookRequest) =>
         item._id ? item : { ...item, _id: item._id },
       );
       setRequests(withIds);
@@ -118,33 +63,33 @@ export default function BookRequestShow() {
     }
   };
 
-  const approveRequest = async (req: bookRequest) => {
-    if (req.req_status !== "Pending") return;
-    try {
-      const url = `${import.meta.env.VITE_API_URL}/book-issued/add`;
-      const response = await fetch(url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: token ? ` ${token}` : "",
-        },
-        body: JSON.stringify({
-          request_id: req._id,
-          book_id: req.book_id,
-          book_status: "Issued",
-        }),
-      });
+  // const approveRequest = async (req: bookRequest) => {
+  //   if (req.req_status !== "Pending") return;
+  //   try {
+  //     const url = `${import.meta.env.VITE_API_URL}/book-issued/add`;
+  //     const response = await fetch(url, {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //         Authorization: token ? ` ${token}` : "",
+  //       },
+  //       body: JSON.stringify({
+  //         request_id: req._id,
+  //         book_id: req.book_id,
+  //         book_status: "Issued",
+  //       }),
+  //     });
 
-      if (!response.ok) {
-        throw new Error("Failed to approve the request");
-      }
-      const result = response.json();
+  //     if (!response.ok) {
+  //       throw new Error("Failed to approve the request");
+  //     }
+  //     const result = response.json();
 
-      loadRequests();
-    } catch (error) {
-      console.error("Error approving request:", error);
-    }
-  };
+  //     loadRequests();
+  //   } catch (error) {
+  //     console.error("Error approving request:", error);
+  //   }
+  // };
 
   const deleteRecord = async (row: bookRequest) => {
     try {
@@ -199,7 +144,7 @@ export default function BookRequestShow() {
           <ReusableTable
             columns={columns}
             data={request}
-            onApprove={approveRequest}
+            // onApprove={approveRequest}
             onDelete={deleteRecord}
             searchPlaceholder="Search Books..."
             serverSide={true}
@@ -220,7 +165,7 @@ export default function BookRequestShow() {
               setStatus(term);
               setPage(0);
             }}
-            uniqueCategory={['Pending',"Approved","Rejected"]}
+            uniqueCategory={['Pending', "Approved", "Rejected"]}
           />
         </div>
       </div>
