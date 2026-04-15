@@ -28,13 +28,7 @@ export const mainNavItems: ItemData[] = [
     text: "Books",
     route: "/books",
   },
-  {
-    id: 2,
-    name: "Purchase",
-    logo: <BiSolidPurchaseTag />,
-    text: "Purchase",
-    route: "/purchase",
-  },
+  
 
   {
     id: 3,
@@ -50,14 +44,25 @@ export const mainNavItems: ItemData[] = [
     text: "Issued Books",
     route: "/book-issue",
   },
+ 
+];
+
+export const adminItems = [
   {
+    id: 2,
+    name: "Purchase",
+    logo: <BiSolidPurchaseTag />,
+    text: "Purchase",
+    route: "/purchase",
+  },
+   {
     id: 5,
     name: "Users",
     logo: <FaUser />,
     text: "Users",
     route: "/user",
   }
-];
+]
 
 export const AccountItems = [
   {

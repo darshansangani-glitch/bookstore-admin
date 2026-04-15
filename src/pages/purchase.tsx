@@ -1,10 +1,10 @@
-import PurchaseDataShow from "../components/Purchase.js";
+import PurchaseTable from "../components/Purchase/PurchaseTable.js";
 
 export default function AdminPurchasePage() {
   return (
     <>
       <div className=" w-full font-[Poppins]! ml-auto">
-        <PurchaseDataShow />
+        <PurchaseTable />
       </div>
       {/* <PurchaseDataShow /> */}
     </>
