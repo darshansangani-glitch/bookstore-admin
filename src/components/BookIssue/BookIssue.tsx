@@ -5,7 +5,6 @@ import { Card } from "../Card.js";
 import { useAppSelector } from "../../redux/hooks.js";
 import { api } from "../../utils/api.js";
 import BookIssueAdd from "./BookIssueAdd.js";
-
 export interface issue {
   _id: string;
   issuer_id: string;
@@ -49,6 +48,7 @@ export default function IssueBooksTable() {
   const [total, setTotal] = React.useState(0);
   const [category,setCategory] = React.useState("")
   const [stats, setStats] = useState<Stats | null>(null);
+  const [loading, setLoading] = useState<boolean>(false)
 
   useEffect(() => {
     fetch("http://localhost:5001/api/stats", { credentials: "include" })
@@ -65,12 +65,14 @@ export default function IssueBooksTable() {
 
   const LoadIssues = async () => {
     try {
+      setLoading(true)
       const data = await api.get(`/book-issued?page=${page + 1}&limit=${rowsPerPage}&search=${search}&category=${category}`, token ? token : '');
       const withIds = data.Issues.map((item: issue) =>
         item._id ? item : { ...item, _id: item._id },
       );
       setIssues(withIds);
       setTotal(data.totalCount)
+      setLoading(false)
     } catch (error) {
       if (error) {
         console.log({ message: error });
@@ -134,6 +136,7 @@ export default function IssueBooksTable() {
             setPage(0);
           }}
           uniqueCategory={['Issued',"Returned"]}
+          loading = {loading}
         />
       </div>
     </>

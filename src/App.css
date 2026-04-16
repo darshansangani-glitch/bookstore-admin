@@ -1,5 +1,6 @@
 @import "tailwindcss";
-
+@import 'react-date-range/dist/styles.css';
+@import 'react-date-range/dist/theme/default.css'; 
 /* @theme {
       --font-display: "Satoshi", "sans-serif";
       --breakpoint-3xl: 1920px;

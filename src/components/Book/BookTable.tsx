@@ -44,6 +44,7 @@ export default function BooksTable() {
     const [editBookData, setEditBookData] = React.useState<book | null>(null);
     // const [deleteBook, setDeleteBook] = React.useState<boolean | null>(false);
     // const [deleteBookId, setDeleteBookId] = React.useState<boolean | null>(false);
+    const [loading, setLoading] = React.useState(true);
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(10);
     const [search, setSearch] = React.useState("");
@@ -73,16 +74,15 @@ export default function BooksTable() {
 
     const LoadBooks = async () => {
         try {
-
-
+            setLoading(true)
             const data = await api.get(`/book?page=${page + 1}&limit=${rowsPerPage}&search=${search}&category=${category}`, token ? token : '');
-            console.log(data)
             const withIds = data.Books.map((item: book) =>
                 item._id ? item : { ...item, _id: item._id },
             );
             setBooks(withIds);
             setTotal(data.totalCount);
             setUniqueCate(data.category)
+            setLoading(false)
         } catch (error) {
             if (error) {
                 console.log({ message: error });
@@ -127,9 +127,9 @@ export default function BooksTable() {
     };
 
     React.useEffect(() => {
-        setTimeout(()=>{
+        setTimeout(() => {
             LoadBooks();
-        },1000)
+        }, 1000)
     }, [search, page, category]);
     return (
         <>
@@ -179,6 +179,7 @@ export default function BooksTable() {
                             setCategory(term)
                             setPage(0)
                         }}
+                        loading={loading}
                     />
                 </div>
             </div>

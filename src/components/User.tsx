@@ -164,7 +164,7 @@ export default function UserForm() {
       )}
 
       <button
-        className="flex text-amber-50 w-30 items-center justify-center bg-sky-500 h-10 mr-5 rounded"
+        className="flex text-amber-50 w-30 items-center justify-center bg-green-500 hover:bg-green-600 h-10 mr-5 rounded"
         onClick={handleForm}
       >
         Add User
@@ -182,22 +182,24 @@ export function UserTable() {
       role: "",
     },
   ]);
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(10);
-  const [search, setSearch] = React.useState("");
-  const [total, setTotal] = React.useState(0);
-
+  const [page, setPage] = React.useState<number>(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState<number>(10);
+  const [search, setSearch] = React.useState<string>("");
+  const [total, setTotal] = React.useState<number>(0);
+  const [loading, setLoading] = React.useState<boolean>(false)
 
   const token = useAppSelector(s => s.auth.token)
 
   const LoadUsers = async () => {
     try {
+      setLoading(true)
       const data = await api.get(`/user?page=${page + 1}&limit=${rowsPerPage}&search=${search}`, token ? token : '');
       const withIds = data.Users.map((item: user) =>
         item._id ? item : { ...item, _id: item._id },
       );
       setUser(withIds);
       setTotal(data.totalCount)
+      setLoading(false)
     } catch (error) {
       if (error) {
         console.log({ message: error });
@@ -263,6 +265,7 @@ export function UserTable() {
           setSearch(term);
           setPage(0);
         }}
+        loading = {loading}
       />
     </>
   );

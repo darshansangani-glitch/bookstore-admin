@@ -47,13 +47,13 @@ export default function PurchaseTable() {
       purchase_quantity: "",
     },
   ]);
-  const [page, setPage] = React.useState(0)
-  const [rowsPerPage, setRowsPerPage] = React.useState(10);
-  const [search, setSearch] = React.useState("");
-  const [total, setTotal] = React.useState(0);
+  const [page, setPage] = React.useState<number>(0)
+  const [rowsPerPage, setRowsPerPage] = React.useState<number>(10);
+  const [search, setSearch] = React.useState<string>("");
+  const [total, setTotal] = React.useState<number>(0);
+  const [loading, setLoading] = React.useState<boolean>(false)
 
   const handleEdit = (purchase: purchase) => {
-    console.log("Edit hurray");
     setEditPurchaseId(purchase._id ? purchase._id : '');
     setEditPurchaseData(purchase);
   };
@@ -62,13 +62,14 @@ export default function PurchaseTable() {
 
   const LoadPurchases = async () => {
     try {
-      console.log(search)
+      setLoading(true)
       const data = await api.get(`/purchase?page=${page + 1}&limit=${rowsPerPage}&search=${search}`, token ? token : '');
       const withIds = data.Purchases.map((item: purchase) =>
         item._id ? item : { ...item, _id: item._id },
       );
       setPurchases(withIds);
       setTotal(data.totalCount);
+      setLoading(false)
     } catch (error) {
       if (error) {
         console.log({ message: error });
@@ -158,6 +159,7 @@ export default function PurchaseTable() {
           setSearch(term);
           setPage(0);
         }}
+        loading = {loading}
       />
     </div>
   );
