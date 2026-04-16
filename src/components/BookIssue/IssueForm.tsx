@@ -37,14 +37,14 @@ export default function IssueForm({ addIssue,
             >
                 <form
                     id="Book_add_form"
-                    className="min-w-50.5 w-130.5  h-60  left-60 border right-50  bg-white flex flex-col  rounded-2xl items-center z-20 "
+                    className="min-w-50.5 w-130.5  h-fit  left-60 border right-50  bg-white flex flex-col  rounded-2xl items-center z-20 "
                     style={{
                         display: (addIssue)
                             ? "flex"
                             : "none",
                     }}
                 >
-                    <div className="relative p-4 pl-6 pr-6  w-full flex justify-between border-b border-b-gray-300">
+                    <div className="relative p-5  w-full flex justify-between border-b border-b-gray-300">
                         <span className="text-xl font-bold  text-gray-400">
                             Book Issue Add Form
                         </span>
@@ -77,18 +77,20 @@ export default function IssueForm({ addIssue,
                         </label>
 
                     </div>
-                    <div className="w-full flex justify-center pt-3 pb-3 gap-50 border-t border-t-gray-300 pl-6 pr-6 ">
-                        <button
-                            className="w-full border h-12 rounded-xl  text-xl items-center hover:bg-red-500 hover:text-white flex justify-center font-semibold cursor-pointer"
-                            onClick={handleForm}>
-                            Cancel
-                        </button>
+                    <div className="w-full  flex justify-end! p-5 pt-0  ">
+                        <div className="flex gap-5 w-70">
+                            <button
+                                className="w-60 border h-10 rounded-xl  text-[15px] items-center hover:bg-red-500 hover:text-white flex justify-center font-semibold cursor-pointer"
+                                onClick={handleForm}>
+                                Cancel
+                            </button>
 
-                        <button
-                            className="w-full bg-green-400 h-12  hover:bg-green-600 rounded-xl border-0 text-xl items-center flex justify-center text-white font-semibold cursor-pointer"
-                            onClick={() => addBookIssueData()}>
-                            Approve
-                        </button>
+                            <button
+                                className="w-60 bg-green-400 h-10  hover:bg-green-600 rounded-xl border-0 text-[15px] items-center flex justify-center text-white font-semibold cursor-pointer"
+                                onClick={() => addBookIssueData()}>
+                                Approve
+                            </button>
+                        </div>
                     </div>
                 </form>
             </div>

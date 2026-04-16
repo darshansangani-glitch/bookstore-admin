@@ -32,7 +32,7 @@ export default function BookForm({ editBookData,
   addBookData,
   setEditBookId,
   setEditBookData,
-  updateRecord  }: BookFormProps) {
+  updateRecord }: BookFormProps) {
   return (
     <div
       className={`fixed inset-0 z-4000 flex items-center justify-center transition-opacity ${addBook
@@ -65,7 +65,7 @@ export default function BookForm({ editBookData,
               : "none",
           }}
         >
-          <div className="relative p-4 pl-6 pr-6  w-full flex justify-between border-b border-b-gray-300">
+          <div className="relative p-5  w-full flex justify-between border-b border-b-gray-300">
             <span className="text-xl font-bold  text-gray-400">
               {addBook ? "Add Your New Book" : "Book Edit Form"}
             </span>
@@ -83,7 +83,7 @@ export default function BookForm({ editBookData,
           </div>
 
           <div
-            className="p-5 pt-2 pl-7 pr-7 flex flex-col gap-3 text-[16px] font-medium font-['poppins','sans-serif] overflow-hidden overflow-y-auto [scrollbar-width:thin]! "
+            className="w-full p-5 flex flex-col gap-3 text-[16px] font-medium font-['poppins','sans-serif] overflow-hidden overflow-y-auto [scrollbar-width:thin]! "
             style={{ scrollbarColor: "#e6e2e28a transparent" }}
           >
             <label>
@@ -235,7 +235,7 @@ export default function BookForm({ editBookData,
                   type="file"
                   id="book_image"
                   className=""
-                  // style={{ display: 'none' }}
+                  style={{ display: 'none' }} 
                   placeholder="Upload Your Book"
                   name="book_image"
                   onChange={(e) => {
@@ -256,34 +256,36 @@ export default function BookForm({ editBookData,
               </label>
             ) : null}
           </div>
-          <div className="w-full flex justify-center pt-3 pb-3 gap-10 border-t border-t-gray-300 pl-6 pr-6 ">
-            <button
-              className="w-full border h-12 rounded-xl  text-xl items-center hover:bg-red-500 hover:text-white flex justify-center font-semibold cursor-pointer"
-              onClick={() => {
-                handleForm
-                  ? handleForm()
-                  : setEditBookId && setEditBookId(null);
-              }}
-            >
-              Cancel
-            </button>
-            {addBook && (
+          <div className="w-full flex justify-end p-5  border-t border-t-gray-300  ">
+            <div className="w-70 flex gap-5">
               <button
-                className="w-full bg-green-400 h-12 rounded-xl border-0 text-xl items-center hover:bg-green-600 flex justify-center text-white font-semibold cursor-pointer"
-                type="button"
-                onClick={() => addBookData && addBookData()}
+                className="w-50 border h-10 rounded-xl  text-[18px] items-center hover:bg-red-500 hover:text-white flex justify-center font-semibold cursor-pointer"
+                onClick={() => {
+                  handleForm
+                    ? handleForm()
+                    : setEditBookId && setEditBookId(null);
+                }}
               >
-                Add Book
+                Cancel
               </button>
-            )}
-            {editBookData && (
-              <button
-                className="w-full bg-green-400 h-12 rounded-xl border-0 text-xl items-center cursor-pointer hover:bg-green-600 flex justify-center text-white font-semibold"
-                onClick={updateRecord}
-              >
-                Update Book
-              </button>
-            )}
+              {addBook && (
+                <button
+                  className="w-50 bg-green-400 h-10 rounded-xl border-0 text-[18px] items-center hover:bg-green-600 flex justify-center text-white font-semibold cursor-pointer"
+                  type="button"
+                  onClick={() => addBookData && addBookData()}
+                >
+                  Add Book
+                </button>
+              )}
+              {editBookData && (
+                <button
+                  className="w-50 bg-green-400 h-10 rounded-xl border-0 text-[18px] items-center cursor-pointer hover:bg-green-600 flex justify-center text-white font-semibold"
+                  onClick={updateRecord}
+                >
+                  Update Book
+                </button>
+              )}
+            </div>
           </div>
         </form>
       </div>
