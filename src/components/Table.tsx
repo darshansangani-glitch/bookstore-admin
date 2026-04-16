@@ -2,6 +2,8 @@ import { FcPrevious, FcNext } from "react-icons/fc";
 import React from "react";
 import { FaInbox, FaSearch } from "react-icons/fa";
 import { RiDeleteBin4Line, RiEditLine } from "react-icons/ri";
+import { DateRange, Range } from 'react-date-range';
+import { RangeKeyDict } from 'react-date-range';
 
 export interface Column<T> {
   id: Extract<keyof T, string> | "actions";
@@ -31,6 +33,9 @@ interface ReusableTableProps<T> {
   onSearch?: (term: string) => void,
   onCategory?: (term: string) => void,
   uniqueCategory?: string[]
+  loading?: boolean
+  setDateState?: React.Dispatch<React.SetStateAction<Range[]>>
+  state?: Range[]
 }
 
 export default function ReusableTable<
@@ -53,9 +58,13 @@ export default function ReusableTable<
   onRowsPerPageChange,
   onSearch,
   onCategory,
-  uniqueCategory
+  uniqueCategory,
+  loading,
+  setDateState,
+  state
 }: ReusableTableProps<T>) {
   const [searchValue, setSearchValue] = React.useState<string>('')
+  const [dateShow, setDateShow] = React.useState<boolean>(false)
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 
@@ -82,7 +91,6 @@ export default function ReusableTable<
   const totalPages = (totalCount && rowsPerPage) && Math.ceil(totalCount / rowsPerPage);
 
   const handleChangeCategory = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    console.log(e.currentTarget.value)
     serverSide && onCategory && onCategory(e.currentTarget.value);
   }
 
@@ -98,7 +106,6 @@ export default function ReusableTable<
     };
   }
 
-  console.log('length', displayedData)
   return (
     <>
       {(title || showSearch) && (
@@ -110,7 +117,7 @@ export default function ReusableTable<
                 type="button"
                 aria-label="search"
               >
-                <FaSearch  className="text-xl"/>
+                <FaSearch className="text-xl" />
               </button>
               <input
                 id="search"
@@ -134,6 +141,31 @@ export default function ReusableTable<
 
                 ))}
               </select>
+            </div>
+          )}
+          {setDateState && (
+            <div className="relative w-full">
+              <button className="border w-74 h-14 rounded-xl border-slate-400 " onClick={() => setDateShow(prev => !prev)}>{state && state[0].startDate?.toISOString().split('T')[0]} - {state && state[0].endDate?.toISOString().split('T')[0]}</button>
+              {dateShow ? (
+                <>
+                  {/* <DateRangePicker
+              className="absolute z-200 -left-50 top-10"
+                onChange={(item: RangeKeyDict): void => setDateState([item.selection])}
+                showSelectionPreview={true}
+                moveRangeOnFirstSelection={false}
+                months={2}
+                ranges={state}
+                direction="horizontal"
+              /> */}
+                  <DateRange
+                    className="absolute z-200 top-15 border left-0"
+                    editableDateInputs={true}
+                    onChange={(item: RangeKeyDict): void => setDateState([item.selection])}
+                    moveRangeOnFirstSelection={false}
+                    ranges={state}
+                  />
+                </>
+              ) : null}
             </div>
           )}
         </div>
@@ -168,11 +200,11 @@ export default function ReusableTable<
                   style={{ padding: "20px" }}
                   className="text-xl font-mono font-medium"
                 >
-                 <FaInbox className="text-5xl! text-slate-400"/> No data available
+                  <FaInbox className="text-5xl! text-slate-400" /> No data available
                 </td>
               </tr>
             ) : (
-              displayedData.length>0 && displayedData.map((row) => (
+              displayedData.length > 0 && displayedData.map((row) => (
                 <tr
                   className=" hover:bg-gray-200! border-b   border-gray-300!"
                   role="checkbox"
@@ -234,7 +266,12 @@ export default function ReusableTable<
                             : "p-3 text-[16px] "
                         }
                       >
-                        {column.format
+                        {loading ? (
+                          <div
+                            className="mt-1 h-8 w-full rounded-md animate-pulse"
+                            style={{ backgroundColor: `${'#000000'}30` }}
+                          />
+                        ) : column.format
                           ? column.format(value, row)
                           : (value as React.ReactNode)}
                       </td>

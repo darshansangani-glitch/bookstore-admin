@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
+import { addDays } from 'date-fns';
 import ReusableTable, { Column } from "../Table.js";
 import { BookRequestedItems } from "../../data/CardData.js";
 import { Card } from "../Card.js";
 import { useAppSelector } from "../../redux/hooks.js";
 import { api } from "../../utils/api.js";
+import { Range } from 'react-date-range';
 
 interface bookRequest {
   _id: string;
@@ -14,6 +16,11 @@ interface bookRequest {
   req_status: string;
 }
 
+export interface DateState {
+  startDate: Date,
+  endDate: Date,
+  key?: string
+}
 
 interface Stats {
   booksRequested: number;
@@ -41,21 +48,30 @@ export default function BookRequestShow() {
       req_status: "",
     },
   ]);
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(10);
-  const [search, setSearch] = React.useState("");
-  const [total, setTotal] = React.useState(0);
-  const [status, setStatus] = React.useState('')
+  const [page, setPage] = React.useState<number>(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState<number>(10);
+  const [search, setSearch] = React.useState<string>("");
+  const [total, setTotal] = React.useState<number>(0);
+  const [status, setStatus] = React.useState<string>('')
+  const [loading, setLoading] = React.useState<boolean>(false);
+  const [dateState, setDateState] = React.useState<Range[]>([{
+    startDate: new Date(),
+    endDate: addDays(new Date(), 7),
+    key: 'selection',
+  }])
 
   const loadRequests = async () => {
     try {
-      const data = await api.get(`/request?page=${page + 1}&limit=${rowsPerPage}&search=${search}&status=${status}`, token ? token : '');
-      console.log(data)
+      setLoading(true)
+      const startDate = dateState[0].startDate?.toISOString().split("T")[0];
+      const endDate = dateState[0].endDate?.toISOString().split("T")[0];
+      const data = await api.get(`/request?page=${page + 1}&limit=${rowsPerPage}&search=${search}&status=${status}&startDate=${startDate}&endDate=${endDate}`, token ? token : '');
       const withIds = data.Requests.map((item: bookRequest) =>
         item._id ? item : { ...item, _id: item._id },
       );
       setRequests(withIds);
       setTotal(data.totalCount)
+      setLoading(false)
     } catch (error) {
       if (error) {
         console.log({ message: error });
@@ -94,7 +110,6 @@ export default function BookRequestShow() {
   const deleteRecord = async (row: bookRequest) => {
     try {
       await api.delete(`/request/delete/${row._id}`, token ? token : '')
-      console.log("deleted record");
       setRequests((prev) => prev.filter((record) => record._id !== row._id));
       return { success: true };
     } catch (error) {
@@ -117,7 +132,7 @@ export default function BookRequestShow() {
 
   useEffect(() => {
     loadRequests();
-  }, [search, page, status]);
+  }, [search, page, status, dateState]);
 
 
   return (
@@ -166,6 +181,9 @@ export default function BookRequestShow() {
               setPage(0);
             }}
             uniqueCategory={['Pending', "Approved", "Rejected"]}
+            loading={loading}
+            setDateState={setDateState}
+            state={dateState}
           />
         </div>
       </div>
