@@ -7,6 +7,7 @@ import { useAppDispatch, useAppSelector } from "../redux/hooks.js";
 import { logout } from "../redux/features/slice/authSlice.js";
 import { CustomJwtPayload } from "../pages/User.js";
 import { jwtDecode } from "jwt-decode";
+import LogOutPopUp from "./LogOut.js";
 
 const drawerWidth = 240;
 
@@ -14,17 +15,11 @@ export default function SideBar() {
   const [location, setLocation] = useState(0);
   const token = useAppSelector(state => state.auth.token !== null ? state.auth.token : '')
   const decodedPayload = token !== '' ? jwtDecode(token ? token : '') as CustomJwtPayload : null;
+  const [logOut, setLogOut] = useState<boolean>(false)
 
   const userRole = decodedPayload !== null ? decodedPayload.role : null;
   const navigate = useNavigate();
-  const dispatch = useAppDispatch()
-  // const handleLogOut = async (e: any) => {
-  //   e.preventDefault();
-  //   localStorage.removeItem("token-info");
-  //   navigate("/login");
-  // };
-
-  // const windowWidth = window.innerWidth;
+  
 
   return (
     <div className="flex z-1 bg-white">
@@ -100,10 +95,9 @@ export default function SideBar() {
             <ul className="p-2">
               <li className="w-45  mx-auto rounded-[13px] hover:bg-[#FDF0EC]">
                 <button
-                  onClick={() => {
-                    dispatch(logout());
-                    navigate("/login");
-                  }}
+                  onClick={()=>
+                     setLogOut(prev=>!prev)
+                  }
                   className="flex items-center gap-2 px-4 py-2 w-full hover:text-red-600"
                 >
                   <MdLogout className="text-[18px]" />
@@ -111,6 +105,7 @@ export default function SideBar() {
                 </button>
               </li>
             </ul>
+            { logOut == true && <LogOutPopUp setLogOut={setLogOut} logOut ={logOut} />}
           </div>
         </div>
       </div>
