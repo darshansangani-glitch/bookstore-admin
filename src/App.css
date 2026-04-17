@@ -1,5 +1,6 @@
 @import "tailwindcss";
-
+@import 'react-date-range/dist/styles.css';
+@import 'react-date-range/dist/theme/default.css'; 
 /* @theme {
       --font-display: "Satoshi", "sans-serif";
       --breakpoint-3xl: 1920px;
@@ -19,7 +20,7 @@
     flex
     flex-col
     border-0
-    rounded-xl!
+    rounded-[15px]
   }
 }
 

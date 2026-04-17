@@ -5,6 +5,8 @@ import Typography from "@mui/material/Typography";
 import ReusableTable, { Column } from "./Table";
 import { UsersItems } from "../data/CardData";
 import { Card } from "./Card";
+import { useAppSelector } from "../redux/hooks";
+import { api } from "../utils/api";
 
 interface user {
   _id: string;
@@ -26,10 +28,10 @@ const columns: readonly Column<user>[] = [
     minWidth: 150,
     align: "left",
   },
-  { id: "actions", label: "Activities", minWidth: 150, align: "left" },
+  { id: "actions", label: "Activities", minWidth: 10, align: "left" },
 ];
 
-export default function Userform() {
+export default function UserForm() {
   const [addUser, setAddUser] = React.useState(false);
   const [userData, setUserData] = React.useState({
     name: "",
@@ -43,22 +45,12 @@ export default function Userform() {
     setAddUser((prev) => !prev);
   };
 
-  const token = localStorage.getItem("token-info");
+  const token = useAppSelector((state) => state.auth.token)
 
   const addUserData = async () => {
     try {
-      const url = `${import.meta.env.VITE_API_URL}/user/add`;
-
-      const response = fetch(url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: token ? ` ${token}` : "",
-        },
-        body: JSON.stringify(userData),
-      });
-      const result: any = (await response).json();
-      await setUserData(result);
+      const result = await api.post('/user/add', userData, token ? token : '')
+      setUserData(result);
     } catch (error) {
       console.log(error);
     }
@@ -172,7 +164,7 @@ export default function Userform() {
       )}
 
       <button
-        className="flex text-amber-50 w-30 items-center justify-center bg-sky-500 h-10 mr-5 rounded"
+        className="flex text-amber-50 w-30 items-center justify-center bg-green-500 hover:bg-green-600 h-10 mr-5 rounded"
         onClick={handleForm}
       >
         Add User
@@ -182,14 +174,6 @@ export default function Userform() {
 }
 
 export function UserTable() {
-  // const [editUserId, setEditUserId] = React.useState<string | null>(null);
-  //   const [editUserData, setEditUserData] = React.useState<user | null>(null);
-
-  //   const handleEdit = (user: user) => {
-  //     setEditUserId(user._id);
-  //     setEditUserData(user);
-  //   };
-
   const [user, setUser] = React.useState<user[]>([
     {
       _id: "",
@@ -198,30 +182,24 @@ export function UserTable() {
       role: "",
     },
   ]);
+  const [page, setPage] = React.useState<number>(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState<number>(10);
+  const [search, setSearch] = React.useState<string>("");
+  const [total, setTotal] = React.useState<number>(0);
+  const [loading, setLoading] = React.useState<boolean>(false)
 
-  const token = localStorage.getItem("token-info");
+  const token = useAppSelector(s => s.auth.token)
 
   const LoadUsers = async () => {
     try {
-      const url = `${import.meta.env.VITE_API_URL}/user`;
-
-      const response = await fetch(url, {
-        method: "GET",
-        headers: {
-          Authorization: token ? ` ${token}` : "",
-        },
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error("Server error response:", errorText);
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const data = await response.json();
+      setLoading(true)
+      const data = await api.get(`/user?page=${page + 1}&limit=${rowsPerPage}&search=${search}`, token ? token : '');
       const withIds = data.Users.map((item: user) =>
         item._id ? item : { ...item, _id: item._id },
       );
       setUser(withIds);
+      setTotal(data.totalCount)
+      setLoading(false)
     } catch (error) {
       if (error) {
         console.log({ message: error });
@@ -229,43 +207,9 @@ export function UserTable() {
     }
   };
 
-  // const updateRecord = async () => {
-  //   try {
-  //     const url = `${import.meta.env.VITE_API_URL}/book-issued/update/${editIssueId}`;
-  //     const response = await fetch(url, {
-  //       method: "PUT",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //         Authorization: token ? ` ${token}` : "",
-  //       },
-  //       body: JSON.stringify(editIssueData),
-  //     });
-  //     if (!response.ok) {
-  //       throw new Error("Failed to update the record");
-  //     }
-
-  //     setEditIssueId(null);
-  //     setEditIssueData(null);
-  //     LoadIssues();
-  //   } catch (error) {
-  //     console.error("Error updating record:", error);
-  //   }
-  // };
-
   const deleteRecord = async (row: user) => {
     try {
-      const url = `${import.meta.env.VITE_API_URL}/user/delete/${row._id}`;
-      const response = await fetch(url, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: token ? ` ${token}` : "",
-        },
-      });
-      console.log(response)
-      if (!response.ok) {
-        throw new Error("Failed to delete the record");
-      }
+      await api.delete(`/user/delete/${row._id}`, token ? token : '')
       setUser((prev) => prev.filter((record) => record._id !== row._id));
       LoadUsers();
       return { success: true };
@@ -289,7 +233,7 @@ export function UserTable() {
 
   React.useEffect(() => {
     LoadUsers();
-  }, []);
+  }, [search, page]);
 
   return (
     <>
@@ -306,7 +250,22 @@ export function UserTable() {
         columns={columns}
         data={user}
         onDelete={deleteRecord}
-        searchPlaceholder="Search Books..."
+        searchPlaceholder="Search Users..."
+        serverSide={true}
+        total={total}
+        page={page}
+        search={search}
+        rowsPerPage={rowsPerPage}
+        onPageChange={(newPage: number) => setPage(newPage)}
+        onRowsPerPageChange={(newRows: number) => {
+          setRowsPerPage(newRows);
+          setPage(0);
+        }}
+        onSearch={(term: string) => {
+          setSearch(term);
+          setPage(0);
+        }}
+        loading = {loading}
       />
     </>
   );
