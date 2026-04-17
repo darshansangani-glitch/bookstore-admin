@@ -1,9 +1,11 @@
 import { FcPrevious, FcNext } from "react-icons/fc";
 import React from "react";
 import { FaInbox, FaSearch } from "react-icons/fa";
+import { IoCalendarOutline } from "react-icons/io5";
 import { RiDeleteBin4Line, RiEditLine } from "react-icons/ri";
-import { DateRange, Range } from 'react-date-range';
+import { DateRangePicker, Range } from 'react-date-range';
 import { RangeKeyDict } from 'react-date-range';
+import { CgClose } from "react-icons/cg";
 
 export interface Column<T> {
   id: Extract<keyof T, string> | "actions";
@@ -61,7 +63,7 @@ export default function ReusableTable<
   uniqueCategory,
   loading,
   setDateState,
-  state
+  state,
 }: ReusableTableProps<T>) {
   const [searchValue, setSearchValue] = React.useState<string>('')
   const [dateShow, setDateShow] = React.useState<boolean>(false)
@@ -109,11 +111,11 @@ export default function ReusableTable<
   return (
     <>
       {(title || showSearch) && (
-        <div className="flex mt-5 gap-5 ">
+        <div className="w-fit flex mt-5 gap-5 ">
           {showSearch && (
-            <div className="flex items-center font-[Poppins]! w-150   pl-0 border rounded-xl border-slate-400 ">
+            <div className="flex items-center font-[Poppins]! flex-1  pl-0 border rounded-xl border-slate-400 ">
               <button
-                className="p-3 items-center text-gray-400! "
+                className="p-2 px-4 items-center text-gray-400! "
                 type="button"
                 aria-label="search"
               >
@@ -122,7 +124,7 @@ export default function ReusableTable<
               <input
                 id="search"
                 name="search"
-                className=" p-3 pl-0 font-[Poppins]! w-full focus:outline-0!"
+                className="p-2 px-4 pl-0 font-[Poppins]! flex-1 focus:outline-0!"
                 placeholder={searchPlaceholder}
                 aria-label="search data"
                 value={search}
@@ -133,7 +135,7 @@ export default function ReusableTable<
 
           )}
           {onCategory && (
-            <div className="border w-50  p-2 text-slate-400 border-slate-400 flex justify-center rounded-xl">
+            <div className="border flex-1  p-2 px-4 text-slate-400 border-slate-400 flex justify-center rounded-xl">
               <select name="category" id="category" className="focus:outline-0! bg-white!" onChange={handleChangeCategory}>
                 <option value="" defaultChecked>--Select-Category--</option>
                 {uniqueCategory?.map(item => (
@@ -144,26 +146,42 @@ export default function ReusableTable<
             </div>
           )}
           {setDateState && (
-            <div className="relative w-full">
-              <button className="border w-74 h-14 rounded-xl border-slate-400 " onClick={() => setDateShow(prev => !prev)}>{state && state[0].startDate?.toISOString().split('T')[0]} - {state && state[0].endDate?.toISOString().split('T')[0]}</button>
+            <div className="relative rounded-xl flex p-2 px-4 items-center border border-slate-400 ">
+              <div className=" w-fit text-[15px] items-center gap-5 flex justify-between">
+                <span>{state && state[0].endDate ? state[0].startDate?.toLocaleDateString('en-IN', {
+                  timeZone: 'Asia/Kolkata',
+                  day: '2-digit',
+                  month: '2-digit',
+                  year: 'numeric'
+                }) : 'YYYY-MM-DD'} - {state && state[0].endDate !== undefined ? state[0].endDate?.toLocaleDateString('en-IN', {
+                  timeZone: 'Asia/Kolkata',
+                  day: '2-digit',
+                  month: '2-digit',
+                  year: 'numeric'
+                }) : 'YYYY-MM-DD'}</span> <button className="p-1  flex justify-center rounded-4xl! hover:bg-gray-200" onClick={() => setDateShow(prev => !prev)}>
+                 { dateShow?<CgClose className="bg-red-500 rounded-2xl p-1 text-white" size={20}/>:<IoCalendarOutline size={20} />}
+                </button></div>
               {dateShow ? (
                 <>
-                  {/* <DateRangePicker
-              className="absolute z-200 -left-50 top-10"
-                onChange={(item: RangeKeyDict): void => setDateState([item.selection])}
-                showSelectionPreview={true}
-                moveRangeOnFirstSelection={false}
-                months={2}
-                ranges={state}
-                direction="horizontal"
-              /> */}
-                  <DateRange
+                  <DateRangePicker
+                    className="absolute z-90 -left-60 border top-12 border-slate-300  shadow-lg"
+                    onChange={(item: RangeKeyDict): void => setDateState([item.selection])}
+                    // showSelectionPreview={true}
+                    moveRangeOnFirstSelection={false}
+                    months={2}
+                    ranges={state}
+                    direction="horizontal"  
+
+                  />
+                  {/* <DateRange
                     className="absolute z-200 top-15 border left-0"
                     editableDateInputs={true}
-                    onChange={(item: RangeKeyDict): void => setDateState([item.selection])}
+                    onChange={(item: RangeKeyDict): void =>{ setDateState([item.selection])}}
                     moveRangeOnFirstSelection={false}
                     ranges={state}
-                  />
+                    endDatePlaceholder="YYYY-MM-DD"
+                    startDatePlaceholder="YYYY-MM-DD"
+                  /> */}
                 </>
               ) : null}
             </div>
@@ -263,7 +281,7 @@ export default function ReusableTable<
                         className={
                           column.id === "description"
                             ? "whitespace-nowrap text-ellipsis  p-3 overflow-hidden text-[16px]! max-w-43.75"
-                            : "p-3 text-[16px] "
+                            : "whitespace-nowrap! text-ellipsis  p-3 overflow-hidden text-[16px] max-w-40  "
                         }
                       >
                         {loading ? (
@@ -312,7 +330,7 @@ export default function ReusableTable<
           <div className="flex items-center gap-3">
             <button
               onClick={() => handleChangePage(Math.max(0, (page ?? 0) - 1))}
-              disabled={page === 0}
+              disabled={totalPages === 0}
               className="p-3.5 flex items-center text-slate-400 font-semibold text-[18px] gap-2"
             >
               <FcPrevious size={18} /> Prev
@@ -329,11 +347,11 @@ export default function ReusableTable<
             </div>
 
             <button
-              onClick={() => handleChangePage(Math.min((totalPages ?? 0) - 1, page ? + 1 : + 0))}
-              disabled={page && page >= (totalPages ? totalPages : 1) - 1 || totalPages === 0}
-              className="p-3.5 flex items-center font-semibold text-slate-400 text-[18px] gap-2"
+              onClick={() => handleChangePage(totalPages !== undefined ? Math.min(totalPages - 1, (page || 0) + 1) : Math.min())}
+              disabled={totalPages === 0 || (page !== undefined && page >= totalPages - 1)}
+              className="p-3.5 flex items-center font-semibold text-slate-400 text-[18px] gap-2 enabled:hover:text-blue-600 disabled:opacity-50"
             >
-              Next <FcNext size={18} />
+              Next <FcNext />
             </button>
           </div>
         </div>
@@ -341,3 +359,5 @@ export default function ReusableTable<
     </>
   );
 }
+
+

@@ -27,17 +27,22 @@ interface Stats {
 }
 
 const columns: readonly Column<bookRequest>[] = [
-  { id: "user_id", label: "User Id", minWidth: 150, align: "left" },
-  { id: "book_id", label: "Book Id", minWidth: 150, align: "left" },
-  { id: "timestamp", label: "TimeStamp", minWidth: 150, align: "left" },
-  { id: "req_status", label: "Request Status", minWidth: 150, align: "left" },
-  { id: "actions", label: "Activity", minWidth: 150, align: "left" },
+  { id: "_id", label: "Request Id", minWidth: 20, align: "left" },
+  { id: "user_id", label: "User Id", minWidth: 20, align: "left" },
+  { id: "book_id", label: "Book Id", minWidth: 20, align: "left" },
+  { id: "timestamp", label: "Request Date", minWidth: 20, align: "left" },
+  { id: "req_status", label: "Request Status", minWidth: 20, align: "left" },
+  { id: "actions", label: "Activity", minWidth: 20, align: "left" },
 ];
 
 
 export default function BookRequestShow() {
   const token = useAppSelector(s => s.auth.token)
-
+  const getLocalDate = (date: Date) => {
+    const d = new Date(date);
+    d.setHours(0, 0, 0, 0);
+    return d;
+  };
   const [request, setRequests] = useState([
     {
       _id: "",
@@ -55,16 +60,29 @@ export default function BookRequestShow() {
   const [status, setStatus] = React.useState<string>('')
   const [loading, setLoading] = React.useState<boolean>(false);
   const [dateState, setDateState] = React.useState<Range[]>([{
-    startDate: new Date(),
-    endDate: addDays(new Date(), 7),
+    startDate: getLocalDate(new Date()),
+    endDate: getLocalDate(addDays(new Date(), 7)),
     key: 'selection',
   }])
 
   const loadRequests = async () => {
     try {
       setLoading(true)
-      const startDate = dateState[0].startDate?.toISOString().split("T")[0];
-      const endDate = dateState[0].endDate?.toISOString().split("T")[0];
+      console.log('startDate', dateState[0].startDate)
+      const startDate = dateState[0].startDate?.toLocaleDateString('en-IN', {
+        timeZone: 'Asia/Kolkata',
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+      });
+
+      const endDate = dateState[0].endDate?.toLocaleDateString('en-IN', {
+        timeZone: 'Asia/Kolkata',
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+      });
+      console.log('start Date', startDate)
       const data = await api.get(`/request?page=${page + 1}&limit=${rowsPerPage}&search=${search}&status=${status}&startDate=${startDate}&endDate=${endDate}`, token ? token : '');
       const withIds = data.Requests.map((item: bookRequest) =>
         item._id ? item : { ...item, _id: item._id },
@@ -137,25 +155,26 @@ export default function BookRequestShow() {
 
   return (
     <>
-      <div className=" w-full   ml-auto">
-        <div className="bg-white  w-full! flex h-20 font-[Poppins]!  ml-auto items-center justify-between relative">
-          <div className="">
-            <h1 className="text-4xl">
-              <span className="text-red-500">User Requests</span> Inventory
+      <div className="w-full! box-border! h-full  items-center justify-between relative ">
+
+        <div className=" box-border! w-full! flex justify-between font-[Poppins]! items-center ">
+          <div>
+            <h1 className="text-2xl">
+              <span className="text-red-500">Book Request</span> Inventory
             </h1>
-            <p className="text-[15px]">Manage your Requests from User's</p>
+            <p className="text-[15px]">Manage your books inventory</p>
           </div>
         </div>
-        <div>
-          <div className="flex flex-wrap font-[Poppins]! gap-6 mt-4">
-            {BookRequestedItems.map((item, i) => (
-              <Card
-                key={item.name}
-                item={{ ...item, number: statValues[i] ?? item.number }}
-                loading={stats === null}
-              />
-            ))}
-          </div>
+        <div className="flex box-border! flex-wrap font-[Poppins]! gap-6 mt-4">
+          {BookRequestedItems.map((item, i) => (
+            <Card
+              key={item.name}
+              item={{ ...item, number: statValues[i] ?? item.number }}
+              loading={stats === null}
+            />
+          ))}
+        </div>
+        <div className="w-full! box-border! h-screen">
           <ReusableTable
             columns={columns}
             data={request}
@@ -187,6 +206,7 @@ export default function BookRequestShow() {
           />
         </div>
       </div>
+
     </>
   );
 }
