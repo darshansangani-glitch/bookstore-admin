@@ -1,10 +1,9 @@
 import React from "react";
 import BookForm, { book } from "./BookForm";
 import { useAppSelector } from "../../redux/hooks";
-import { api } from "../../utils/api";
 
 export function BookAdd() {
-  const [addBook, setAddBook] = React.useState(false);
+  const [addBook, setAddBook] = React.useState<Boolean>(false);
   const [bookData, setBookData] = React.useState<book>({
     _id: "",
     book_name: "",
@@ -38,7 +37,6 @@ export function BookAdd() {
           },
           body: formData,
         });
-        console.log(response);
         const result = await response.json();
         setBookData(result);
 
@@ -50,7 +48,7 @@ export function BookAdd() {
   return (
     <div className=" box-border! w-full! flex justify-between font-[Poppins]! items-center ">
       <div>
-        <h1 className="text-4xl">
+        <h1 className="text-2xl">
           <span className="text-red-500">Book</span> Inventory
         </h1>
         <p className="text-[15px]">Manage your books inventory</p>
@@ -60,12 +58,13 @@ export function BookAdd() {
           addBook={addBook}
           handleForm={handleForm}
           setBookData={setBookData}
+          setAddBook={setAddBook}
           bookData={bookData}
           addBookData={addBookData}
         />
       )}
       <button
-        className="flex text-amber-50 w-30 items-center justify-center bg-sky-500 h-10 mr-5 rounded"
+        className="flex text-amber-50 w-30 items-center justify-center bg-green-500 hover:bg-green-600 font-semibold h-10 mr-5 rounded"
         onClick={handleForm}
       >
         Add Book

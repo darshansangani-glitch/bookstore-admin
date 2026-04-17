@@ -22,7 +22,8 @@ interface BookFormProps {
   setEditBookId?: React.Dispatch<SetStateAction<string | null>>,
   setEditBookData?: React.Dispatch<SetStateAction<book | null>>
   updateRecord?: () => void,
-  editBookId?: string
+  editBookId?: string,
+  setAddBook?: React.Dispatch<SetStateAction<Boolean>>
 }
 
 export default function BookForm({ editBookData,
@@ -32,7 +33,8 @@ export default function BookForm({ editBookData,
   addBookData,
   setEditBookId,
   setEditBookData,
-  updateRecord }: BookFormProps) {
+  updateRecord,
+setAddBook }: BookFormProps) {
   return (
     <div
       className={`fixed inset-0 z-4000 flex items-center justify-center transition-opacity ${addBook
@@ -272,9 +274,12 @@ export default function BookForm({ editBookData,
                 <button
                   className="w-50 bg-green-400 h-10 rounded-xl border-0 text-[18px] items-center hover:bg-green-600 flex justify-center text-white font-semibold cursor-pointer"
                   type="button"
-                  onClick={() => addBookData && addBookData()}
+                  onClick={() => {addBookData && addBookData();setTimeout(()=>{
+                    setAddBook && setAddBook(prev=>!prev)
+                  },2000)}}
+                    
                 >
-                  Add Book
+                  {addBook== false?'Added':'Add Book'}
                 </button>
               )}
               {editBookData && (
