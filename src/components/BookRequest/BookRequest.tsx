@@ -38,11 +38,7 @@ const columns: readonly Column<bookRequest>[] = [
 
 export default function BookRequestShow() {
   const token = useAppSelector(s => s.auth.token)
-  const getLocalDate = (date: Date) => {
-    const d = new Date(date);
-    d.setHours(0, 0, 0, 0);
-    return d;
-  };
+  
   const [request, setRequests] = useState([
     {
       _id: "",
@@ -59,6 +55,11 @@ export default function BookRequestShow() {
   const [total, setTotal] = React.useState<number>(0);
   const [status, setStatus] = React.useState<string>('')
   const [loading, setLoading] = React.useState<boolean>(false);
+  const getLocalDate = (date: Date) => {
+    const d = new Date(date);
+    d.setHours(0, 0, 0, 0);
+    return d;
+  };
   const [dateState, setDateState] = React.useState<Range[]>([{
     startDate: getLocalDate(new Date()),
     endDate: getLocalDate(addDays(new Date(), 7)),
@@ -68,7 +69,6 @@ export default function BookRequestShow() {
   const loadRequests = async () => {
     try {
       setLoading(true)
-      console.log('startDate', dateState[0].startDate)
       const startDate = dateState[0].startDate?.toLocaleDateString('en-IN', {
         timeZone: 'Asia/Kolkata',
         day: '2-digit',

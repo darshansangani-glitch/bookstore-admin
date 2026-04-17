@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { purchase} from "./PurchaseAdd";
+import { purchase } from "./PurchaseAdd";
 import { useAppSelector } from "../../redux/hooks";
 import { api } from "../../utils/api";
 import { BookPurchasedItems } from "../../data/CardData";
@@ -7,6 +7,9 @@ import { Card } from "../Card";
 import PurchaseForm from "./PurchaseForm";
 import ReusableTable, { Column } from "../Table";
 import PurchaseInsertion from "./PurchaseAdd";
+import { addDays } from "date-fns";
+import { Range } from 'react-date-range';
+
 
 interface Stats {
   booksPurchased: number;
@@ -52,7 +55,16 @@ export default function PurchaseTable() {
   const [search, setSearch] = React.useState<string>("");
   const [total, setTotal] = React.useState<number>(0);
   const [loading, setLoading] = React.useState<boolean>(false)
-
+  const getLocalDate = (date: Date) => {
+    const d = new Date(date);
+    d.setHours(0, 0, 0, 0);
+    return d;
+  };
+  const [dateState, setDateState] = React.useState<Range[]>([{
+    startDate: getLocalDate(new Date()),
+    endDate: getLocalDate(addDays(new Date(), 7)),
+    key: 'selection',
+  }])
   const handleEdit = (purchase: purchase) => {
     setEditPurchaseId(purchase._id ? purchase._id : '');
     setEditPurchaseData(purchase);
@@ -63,7 +75,20 @@ export default function PurchaseTable() {
   const LoadPurchases = async () => {
     try {
       setLoading(true)
-      const data = await api.get(`/purchase?page=${page + 1}&limit=${rowsPerPage}&search=${search}`, token ? token : '');
+      const startDate = dateState[0].startDate?.toLocaleDateString('en-IN', {
+        timeZone: 'Asia/Kolkata',
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+      });
+
+      const endDate = dateState[0].endDate?.toLocaleDateString('en-IN', {
+        timeZone: 'Asia/Kolkata',
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+      });
+      const data = await api.get(`/purchase?page=${page + 1}&limit=${rowsPerPage}&search=${search}&startDate=${startDate}&endDate=${endDate}`, token ? token : '');
       const withIds = data.Purchases.map((item: purchase) =>
         item._id ? item : { ...item, _id: item._id },
       );
@@ -116,7 +141,7 @@ export default function PurchaseTable() {
 
   useEffect(() => {
     LoadPurchases();
-  }, [search, page]);
+  }, [search, page, dateState]);
 
   return (
     <div>
@@ -139,28 +164,32 @@ export default function PurchaseTable() {
           updateRecord={updateRecord}
         />
       )}
-      <ReusableTable
-        columns={columns}
-        data={purchase}
-        onEdit={handleEdit}
-        onDelete={deleteRecord}
-        searchPlaceholder="Search Books..."
-        serverSide={true}
-        total={total}
-        page={page}
-        search={search}
-        rowsPerPage={rowsPerPage}
-        onPageChange={(newPage: number) => setPage(newPage)}
-        onRowsPerPageChange={(newRows: number) => {
-          setRowsPerPage(newRows);
-          setPage(0);
-        }}
-        onSearch={(term: string) => {
-          setSearch(term);
-          setPage(0);
-        }}
-        loading = {loading}
-      />
+      <div className="w-full! box-border! h-screen">
+        <ReusableTable
+          columns={columns}
+          data={purchase}
+          onEdit={handleEdit}
+          onDelete={deleteRecord}
+          searchPlaceholder="Search Books..."
+          serverSide={true}
+          total={total}
+          page={page}
+          search={search}
+          rowsPerPage={rowsPerPage}
+          onPageChange={(newPage: number) => setPage(newPage)}
+          onRowsPerPageChange={(newRows: number) => {
+            setRowsPerPage(newRows);
+            setPage(0);
+          }}
+          onSearch={(term: string) => {
+            setSearch(term);
+            setPage(0);
+          }}
+          loading={loading}
+          setDateState={setDateState}
+          state={dateState}
+        />
+      </div>
     </div>
   );
 }

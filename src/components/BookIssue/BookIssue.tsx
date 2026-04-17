@@ -5,6 +5,9 @@ import { Card } from "../Card.js";
 import { useAppSelector } from "../../redux/hooks.js";
 import { api } from "../../utils/api.js";
 import BookIssueAdd from "./BookIssueAdd.js";
+import { addDays } from "date-fns";
+import { Range } from 'react-date-range';
+
 export interface issue {
   _id: string;
   issuer_id: string;
@@ -46,10 +49,19 @@ export default function IssueBooksTable() {
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const [search, setSearch] = React.useState("");
   const [total, setTotal] = React.useState(0);
-  const [category,setCategory] = React.useState("")
+  const [category, setCategory] = React.useState("")
   const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState<boolean>(false)
-
+  const getLocalDate = (date: Date) => {
+    const d = new Date(date);
+    d.setHours(0, 0, 0, 0);
+    return d;
+  };
+  const [dateState, setDateState] = React.useState<Range[]>([{
+    startDate: getLocalDate(new Date()),
+    endDate: getLocalDate(addDays(new Date(), 7)),
+    key: 'selection',
+  }])
   useEffect(() => {
     fetch("http://localhost:5001/api/stats", { credentials: "include" })
       .then((res) => res.json())
@@ -66,7 +78,20 @@ export default function IssueBooksTable() {
   const LoadIssues = async () => {
     try {
       setLoading(true)
-      const data = await api.get(`/book-issued?page=${page + 1}&limit=${rowsPerPage}&search=${search}&category=${category}`, token ? token : '');
+      const startDate = dateState[0].startDate?.toLocaleDateString('en-IN', {
+        timeZone: 'Asia/Kolkata',
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+      });
+
+      const endDate = dateState[0].endDate?.toLocaleDateString('en-IN', {
+        timeZone: 'Asia/Kolkata',
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+      });
+      const data = await api.get(`/book-issued?page=${page + 1}&limit=${rowsPerPage}&search=${search}&category=${category}&startDate=${startDate}&endDate=${endDate}`, token ? token : '');
       const withIds = data.Issues.map((item: issue) =>
         item._id ? item : { ...item, _id: item._id },
       );
@@ -97,7 +122,7 @@ export default function IssueBooksTable() {
 
   React.useEffect(() => {
     LoadIssues();
-  }, [search, page, category]);
+  }, [search, page, category, dateState]);
 
   return (
     <>
@@ -111,7 +136,7 @@ export default function IssueBooksTable() {
           />
         ))}
       </div>
-      <div>
+      <div className="w-full! box-border! h-screen">
         <ReusableTable
           columns={columns}
           data={issues}
@@ -135,8 +160,10 @@ export default function IssueBooksTable() {
             setCategory(term);
             setPage(0);
           }}
-          uniqueCategory={['Issued',"Returned"]}
-          loading = {loading}
+          uniqueCategory={['Issued', "Returned"]}
+          loading={loading}
+          setDateState={setDateState}
+          state={dateState}
         />
       </div>
     </>
