@@ -173,15 +173,6 @@ export default function ReusableTable<
                     direction="horizontal"  
 
                   />
-                  {/* <DateRange
-                    className="absolute z-200 top-15 border left-0"
-                    editableDateInputs={true}
-                    onChange={(item: RangeKeyDict): void =>{ setDateState([item.selection])}}
-                    moveRangeOnFirstSelection={false}
-                    ranges={state}
-                    endDatePlaceholder="YYYY-MM-DD"
-                    startDatePlaceholder="YYYY-MM-DD"
-                  /> */}
                 </>
               ) : null}
             </div>
