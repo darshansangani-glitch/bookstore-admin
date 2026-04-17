@@ -29,7 +29,8 @@ interface Stats {
 // }
 
 const columns: readonly Column<book>[] = [
-    { id: "book_name", label: "Book Name", minWidth: 20, align: "left" },
+    { id: "_id", label: "Book Id", minWidth: 20, align: "left" },
+      { id: "book_name", label: "Book Name", minWidth: 20, align: "left" },
     { id: "description", label: "Description", minWidth: 20, align: "left" },
     { id: "author", label: "Author", minWidth: 20, align: "left" },
     { id: "category", label: "Category", minWidth: 20, align: "left" },

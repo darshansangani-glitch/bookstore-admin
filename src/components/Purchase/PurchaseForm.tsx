@@ -1,6 +1,7 @@
 
 import { SetStateAction } from "react";
 import { RxCross1 } from "react-icons/rx";
+import { ClipLoader } from "react-spinners";
 
 interface purchase {
   _id?: string;
@@ -22,6 +23,7 @@ interface PurchaseProps {
   setEditPurchaseData?: React.Dispatch<SetStateAction<purchase | null>>
   updateRecord?: () => void,
   editPurchaseId?: string
+  loading?:Boolean
 }
 
 export default function PurchaseForm({ editPurchaseData,
@@ -33,6 +35,7 @@ export default function PurchaseForm({ editPurchaseData,
   setEditPurchaseId,
   setEditPurchaseData,
   updateRecord,
+  loading,
 }: PurchaseProps) {
   { // <div className="w-full h-screen z-200 bg-gre fixed ">
     //   <form
@@ -236,7 +239,7 @@ export default function PurchaseForm({ editPurchaseData,
                   type="button"
                   onClick={() => addPurchaseData && addPurchaseData()}
                 >
-                  Purchase Book
+               {   loading? <ClipLoader />: 'Purchase Book'}
                 </button>
               )}
               {editPurchaseData && (

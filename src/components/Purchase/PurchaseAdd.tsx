@@ -25,6 +25,7 @@ export default function PurchaseInsertion() {
     book_id: "",
     purchase_quantity: "",
   });
+  const [loading, setLoading] = React.useState<Boolean>(false)
 
   const token = useAppSelector((state) => state.auth.token)
   const decodedPayload = jwtDecode(token ?? "") as CustomJwtPayload;
@@ -37,8 +38,13 @@ export default function PurchaseInsertion() {
 
   const addPurchaseData = async () => {
     try {
+      setLoading(true)
       const result = await api.post('/purchase/add', purchaseData, token ? token : '')
       setPurchaseData(result)
+      setTimeout(()=>{
+        setLoading(false)
+        setAddPurchase((prev) => !prev);
+      },2000)
     } catch (error) {
       console.log(error);
     }
@@ -56,6 +62,7 @@ export default function PurchaseInsertion() {
           </div>
           {addPurchase && (
             <PurchaseForm
+            loading={loading}
               addPurchase={addPurchase}
               handleForm={handleForm}
               setPurchaseData={setPurchaseData}
