@@ -22,14 +22,14 @@ export default function SideBar() {
   
 
   return (
-    <div className="flex z-1 bg-white">
+    <div className="flex h-screen fixed z-150 bg-white">
 
       <div
-        className="relative flex flex-col gap-2 border-r border-b h-screen border-slate-300"
+        className="relative flex flex-col gap-2 border-r border-b h-full border-slate-300"
         style={{ width: drawerWidth }}
       >
 
-        <div className="flex border-b h-14.5! p-3 pl-3 gap-2 items-center border-b-gray-300">
+        <div className="sticky  flex border-b h-14.5! p-3 pl-3 gap-2 items-center border-b-gray-300">
           <img
             src={darkLogo}
             alt="Travis Howard"

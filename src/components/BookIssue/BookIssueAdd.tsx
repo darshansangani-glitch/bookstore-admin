@@ -17,7 +17,6 @@ export default function BookIssueAdd() {
 
   const addBookIssueData = async () => {
     try {
-      console.log(issueData)
       const data = await api.post('/book-issued/add', issueData, token ? token : '')
       setIssueData(data);
 
@@ -29,16 +28,16 @@ export default function BookIssueAdd() {
   return (
     <div className=" box-border! w-full! flex justify-between font-[Poppins]! items-center ">
       <div>
-        <h1 className="text-4xl">
+        <h1 className="text-2xl">
           <span className="text-red-500">Book Issue</span> Inventory
         </h1>
         <p className="text-[15px]">Manage your books inventory</p>
       </div>
       {addIssue && (
-          <IssueForm addBookIssueData={addBookIssueData} issueData={issueData.request_id} handleForm= {handleForm} addIssue={addIssue} setIssueData={setIssueData} />
+        <IssueForm addBookIssueData={addBookIssueData} issueData={issueData.request_id} handleForm={handleForm} addIssue={addIssue} setIssueData={setIssueData} />
       )}
       <button
-        className="flex text-amber-50 w-fit items-center p-5 bg-sky-500 h-10 rounded"
+        className="flex text-amber-50 w-fit items-center p-5 bg-green-500 font-semibold hover:bg-green-600 h-10 rounded"
         onClick={handleForm}
       >
         Approve Issue

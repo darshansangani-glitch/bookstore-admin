@@ -20,12 +20,12 @@ interface Stats {
 }
 
 const columns: readonly Column<issue>[] = [
-  { id: "issuer_id", label: "Issuer ID", minWidth: 150, align: "left" },
-  { id: "request_id", label: "Request Id", minWidth: 150, align: "left" },
-  { id: "issue_date", label: "Issue Date", minWidth: 150, align: "left" },
-  { id: "return_date", label: "Return Date", minWidth: 150, align: "left" },
-  { id: "book_status", label: "Book Status", minWidth: 150, align: "left" },
-  { id: "actions", label: "Actions", minWidth: 150, align: "left" },
+  { id: "issuer_id", label: "Issuer ID", minWidth: 20, align: "left" },
+  { id: "request_id", label: "Request Id", minWidth: 20, align: "left" },
+  { id: "issue_date", label: "Issue Date", minWidth: 20, align: "left" },
+  { id: "return_date", label: "Return Date", minWidth: 20, align: "left" },
+  { id: "book_status", label: "Book Status", minWidth: 20, align: "left" },
+  { id: "actions", label: "Actions", minWidth: 20, align: "left" },
 ];
 
 

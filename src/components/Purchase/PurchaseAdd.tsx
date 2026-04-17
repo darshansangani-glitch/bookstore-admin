@@ -49,7 +49,7 @@ export default function PurchaseInsertion() {
       {userRole === "Admin" ? (
         <div className=" box-border! w-full! flex justify-between font-[Poppins]! items-center ">
           <div>
-            <h1 className="text-4xl">
+            <h1 className="text-2xl">
               <span className="text-red-500">Purchase</span> Inventory
             </h1>
             <p className="text-[15px]">Manage your books inventory</p>
@@ -64,7 +64,7 @@ export default function PurchaseInsertion() {
             />
           )}
           <button
-            className="flex text-amber-50 w-fit p-5 items-center justify-center bg-sky-500 h-10 mr-5 rounded"
+            className="flex text-amber-50 w-fit p-5 items-center justify-center bg-green-500 hover:bg-green-600 font-semibold h-10 mr-5 rounded"
             onClick={handleForm}
           >
             Purchase Book
@@ -74,7 +74,7 @@ export default function PurchaseInsertion() {
       ) : (
         <div className="bg-white  w-full! flex h-20 m  ml-auto items-center justify-between relative">
           <div className="">
-            <h1 className="text-4xl">
+            <h1 className="text-2xl">
               <span className="text-red-500">Purchase</span> Inventory
             </h1>
             <p className="text-[15px]">Manage your Purchase inventory</p>
