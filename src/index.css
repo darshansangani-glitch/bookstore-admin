@@ -1,3 +1,6 @@
+@import 'react-date-range/dist/styles.css';
+@import 'react-date-range/dist/theme/default.css'; 
+
 :root {
   --text: #6b6375;
   --text-h: #08060d;
